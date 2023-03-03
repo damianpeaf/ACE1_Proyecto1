@@ -1,6 +1,6 @@
-# ACE1-231S0778BG07PRA2
+# ACE1-231S0778BG07PRO1
 
-## Práctica 2 - Arquitectura de computadores y ensambladores 1
+## Proyecto 1 - Arquitectura de computadores y ensambladores 1
 ### Integrantes:
 - Alvaro Norberto García Meza 202109567
 - Damián Ignacio Peña Afre 202110568

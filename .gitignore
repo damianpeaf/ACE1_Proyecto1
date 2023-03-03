@@ -1,1 +1,15 @@
+# PROTEUS FILES
+*.pdsbak
+*.workspace
+SCRIPTS/
+*.XML
+*.CDB
+
+# ARDUINO IDE BUILD FILES
+*.eep
+*.elf
+*.hex
+*.bin
+build/
+
 *.vscode
