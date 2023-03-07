@@ -113,12 +113,31 @@ void welcome(){
     lcd.setCursor(0, 1);
     lcd.print("GRP 07     SEC B");
 
+    String text = "";
     while (!is_bluetooth_connected)
     {
-        // TODO: Check if bluetooth is connected
-        delay(3000);
-        is_bluetooth_connected = true;
+         while(Serial1.available()){
+            delay(10);
+            char c = Serial1.read();
+            text += c;
+        }
+
+        if(text.length() > 0 && text == "connected"){
+            is_bluetooth_connected = true;
+            lcd.clear();
+            lcd.setCursor(0, 1);
+            lcd.print("Bluetooth connected");
+            text="";
+            delay(1000);
+        }
     }
+
+    write_bluetooth_logo(lcd, 0, 0);
+    lcd.setCursor(1, 0);
+    lcd.print("Bienvenido");
+    write_bluetooth_logo(lcd, 0, 11);
+    lcd.setCursor(0, 1);
+    lcd.print("GRP 07     SEC B");
 
     while(true){
         if(ok_button.is_pressed()){
@@ -168,6 +187,9 @@ void login(){
 
     if(user.is_valid()){
         String token = get_user_token();
+
+        Serial1.write(token.c_str());
+
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("Ingresa el token:");
@@ -176,16 +198,35 @@ void login(){
 
         int tries = 0;
         bool is_token_validated = false;
+        String token_received = "";
 
         while(!is_token_validated){
-            // TODO Check if token is validated with the app
-            delay(3000);
-            is_token_validated = true;
+            
+            char key = keypad.getKey();
+            if(key != NO_KEY){
+                token_received += key;
+            }
+
+            if(ok_button.is_pressed()){
+                if(token_received == token){
+                    is_token_validated = true;
+                    break;
+                } else {
+                    tries++;
+                    lcd.clear();
+                    lcd.setCursor(0, 0);
+                    lcd.print("Token invalido");
+                    lcd.setCursor(0, 1);
+                    lcd.print("Intentos: " + String(tries));
+                    delay(1000);
+                    token_received = "";
+                }
+            }
 
             if(tries >= 3){
                 lcd.clear();
                 lcd.setCursor(0, 0);
-                lcd.print("Token invalido");
+                lcd.print("Intentos agotados");
                 delay(10000);
                 break;
             }
