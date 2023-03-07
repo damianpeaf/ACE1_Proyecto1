@@ -15,7 +15,7 @@
 // ------------------ Menus ------------------ //
 const int WELCOME = 0, LOGIN = 1, CONSUMER = 2, ADMIN = 3;
 const int CONSUMER_MAIN_DASHBOARD = 0, CONSUMER_BUY_PRODUCTS = 1, CONSUMER_CREDITS = 2;
-
+const int ADMIN_MAIN_DASHBOARD = 0, ADMIN_PRODUCT_ACTIONS = 1, ADMIN_REGISTER_USER = 2, ADMIN_STATE = 3;
 int current_menu = WELCOME;
 
 // ------------------ Visualization ------------------ //
@@ -67,9 +67,9 @@ void consumer_credits(int *current_menu);
 // * Admin
 void admin_dashboard();
 void admin_main_dashboard(int *current_menu, bool *session);
-void admin_add_user();
-void admin_product_actions();
-void admin_register_user();
+void admin_add_user(int *current_menu);
+void admin_product_actions(int *current_menu);
+void admin_register_user(int *current_menu);
 
 
 void menu_setup(){
@@ -388,7 +388,7 @@ void consumer_credits(int *current_menu){
     *current_menu = CONSUMER_MAIN_DASHBOARD;
 }
 
-admin_dashboard(){
+void admin_dashboard(){
     lcd.clear();
 
     bool session = true;
