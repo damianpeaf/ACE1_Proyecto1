@@ -163,12 +163,21 @@ void reset_eeprom() {
 
     // INIT ADMIN USER
 
-    User user = User();
-    user.isAdmin = true;
-    strcpy(user.name, "ad07min-b");
-    strcpy(user.nickname, "B5155E");
-    strcpy(user.password, "0707B5");
-    write_user(user);
+    User admin = User();
+    admin.isAdmin = true;
+    strcpy(admin.name, "ad07min-b");
+    strcpy(admin.nickname, "B5155E");
+    strcpy(admin.password, "0707B5");
+    write_user(admin);
+
+
+    // Test consumer
+    User consumer = User();
+    consumer.isAdmin = false;
+    strcpy(consumer.name, "damian");
+    strcpy(consumer.nickname, "123456");
+    strcpy(consumer.password, "123456");
+    write_user(consumer);
 
 }
 

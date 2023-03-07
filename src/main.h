@@ -13,7 +13,9 @@
 #include "user_functions.h"
 
 // ------------------ Menus ------------------ //
-const int WELCOME = 0, LOGIN = 1;
+const int WELCOME = 0, LOGIN = 1, CONSUMER = 2, ADMIN = 3;
+const int CONSUMER_MAIN_DASHBOARD = 0, CONSUMER_BUY_PRODUCTS = 1, CONSUMER_CREDITS = 2;
+
 int current_menu = WELCOME;
 
 // ------------------ Visualization ------------------ //
@@ -45,6 +47,9 @@ byte colPins[COLS] = {30, 31, 32, 33};
 
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
+// ------------------ User ------------------ //
+User authenticated_user;
+
 // ------------------ Functions ------------------ //
 void menu_setup();
 void menu_loop();
@@ -53,6 +58,11 @@ void menu_loop();
 void welcome();
 void login();
 
+// * Consumer
+void consumer_dashboard();
+void consumer_main_dashboard(int *current_menu, bool *session);
+void consumer_buy_products(int *current_menu);
+void consumer_credits(int *current_menu);
 
 void menu_setup(){
     lcd.begin(16, 2);
@@ -77,6 +87,14 @@ void menu_loop(){
 
     case LOGIN:
         login();
+        break;
+    
+    case CONSUMER:
+        consumer_dashboard();
+        break;
+
+    case ADMIN:
+        // TODO: 
         break;
 
     default:
@@ -152,12 +170,47 @@ void login(){
         String token = get_user_token();
         lcd.clear();
         lcd.setCursor(0, 0);
-        lcd.print("Bienvenido");
+        lcd.print("Ingresa el token:");
         lcd.setCursor(0, 1);
         lcd.print(token);
-        delay(8000);
 
-        Serial.println(token);
+        int tries = 0;
+        bool is_token_validated = false;
+
+        while(!is_token_validated){
+            // TODO Check if token is validated with the app
+            delay(3000);
+            is_token_validated = true;
+
+            if(tries >= 3){
+                lcd.clear();
+                lcd.setCursor(0, 0);
+                lcd.print("Token invalido");
+                delay(10000);
+                break;
+            }
+        }
+
+
+        if(is_token_validated){
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print("Bienvenido");
+            lcd.setCursor(0, 1);
+            lcd.print(user.nickname);
+
+            authenticated_user = user;
+            
+            if(user.isAdmin){
+                current_menu = ADMIN;
+            } else {
+                current_menu = CONSUMER;
+            }
+
+            delay(1000);
+        }
+
+
     } else {
         lcd.clear();
         lcd.setCursor(0, 0);
@@ -166,9 +219,112 @@ void login(){
         lcd.print("incorrectas");
         delay(1000);
     }
-
-
 }
 
+void consumer_dashboard(){
+
+    lcd.clear();
+
+    bool session = true;
+    int current_menu = CONSUMER_MAIN_DASHBOARD;
+    
+    int *current_menu_ptr = &current_menu;
+    bool *session_ptr = &session;
+
+    while(session){
+        switch (current_menu){
+            case CONSUMER_MAIN_DASHBOARD:
+                consumer_main_dashboard(current_menu_ptr, session_ptr);
+                break;  
+            case CONSUMER_BUY_PRODUCTS:
+                consumer_buy_products(current_menu_ptr);
+                break;
+            case CONSUMER_CREDITS:
+                consumer_credits(current_menu_ptr);
+                break;
+        }
+    }
+}
+
+void consumer_main_dashboard(int *current_consumer_menu, bool *session){
+    lcd.clear();
+    bool end = false;
+    int current_option = 0;
+    
+    while(!end){
+        lcd.setCursor(0, 0);
+            
+        switch (current_option){
+            case 0:
+                lcd.print("Comprar Productos");
+                break;
+            case 1:
+                lcd.print("Ver creditos");
+                break;
+            case 2:
+                lcd.print("Cerrar sesion");
+                break;
+        }
+
+        if(next_button.is_pressed()){
+            current_option++;
+            if(current_option > 2){
+                current_option = 0;
+            }
+            lcd.clear();
+        }
+
+        if(prev_button.is_pressed()){
+            current_option--;
+            if(current_option < 0){
+                current_option = 2;
+            }
+            lcd.clear();
+        }
+
+        if(ok_button.is_pressed()){
+            switch (current_option){
+                case 0:
+                    *current_consumer_menu = CONSUMER_BUY_PRODUCTS;
+                    end = true;
+                    break;
+                case 1:
+                    end = true;
+                    *current_consumer_menu = CONSUMER_CREDITS;
+                    break;
+                case 2:
+                    end = true;
+                    *session = false;
+                    current_menu = WELCOME;
+                    break;
+            }
+        }
+    }
+}
+
+void consumer_buy_products(int *current_menu){
+    // TODO:
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Comprar productos");
+    delay(2000);
+    *current_menu = CONSUMER_MAIN_DASHBOARD;
+}
+
+void consumer_credits(int *current_menu){
+
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Ver creditos");
+    lcd.setCursor(0, 1);
+    lcd.print(String(authenticated_user.credits));
+
+    while(true){
+        if(ok_button.is_pressed()){
+            break;
+        }
+    }
+    *current_menu = CONSUMER_MAIN_DASHBOARD;
+}
 
 #endif
