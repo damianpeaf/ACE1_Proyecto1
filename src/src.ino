@@ -9,8 +9,12 @@
 */
 
 #include "main.h"
+#include "eeprom_manager.h"
+
 
 void setup() {
+    Serial.begin(9600);
+    // reset_eeprom();
     menu_setup();
 }
 

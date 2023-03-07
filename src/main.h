@@ -6,8 +6,11 @@
 #include <LedControl.h>
 #include <Key.h>
 #include <Keypad.h>
+
 #include "button.h"
 #include "lcd.h"
+#include "user.h"
+#include "user_functions.h"
 
 // ------------------ Menus ------------------ //
 const int WELCOME = 0, LOGIN = 1;
@@ -143,7 +146,27 @@ void login(){
         }
     }
 
-    // TODO: Check if user exists
+    User user = login_user(nickname, password);
+
+    if(user.is_valid()){
+        String token = get_user_token();
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("Bienvenido");
+        lcd.setCursor(0, 1);
+        lcd.print(token);
+        delay(8000);
+
+        Serial.println(token);
+    } else {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("Credenciales");
+        lcd.setCursor(0, 1);
+        lcd.print("incorrectas");
+        delay(1000);
+    }
+
 
 }
 
