@@ -75,11 +75,12 @@ Product get_product(int index) {
     if(index < 0 || index >= get_product_count()) {
         Serial.println("Invalid product index");
         product = Product();
-        return;
+        return product;
     }
 
     int address = PRODUCTS_BLOCK_START_ADDRESS + (index * sizeof(Product));
     EEPROM.get(address, product);
+    return product;
 }
 
 void update_product(Product product) {
@@ -125,7 +126,7 @@ User get_user( int index) {
     if(index < 0 || index >= get_user_count()) {
         Serial.println("Invalid user index");
         user = User();
-        return;
+        return user;
     }
 
     int address = USERS_BLOCK_START_ADDRESS + (index * sizeof(User));
@@ -156,8 +157,9 @@ void reset_eeprom() {
 
     for (int i = 0; i < MAX_PRODUCTS; i++) {
         product = Product();
-        product.price = 100;
-        product.quantity = 10;
+        strcpy(product.name, "generic");
+        product.price = random(1, 25);
+        product.quantity = random(0,100);
         write_product(product);
     }
 

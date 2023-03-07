@@ -23,4 +23,20 @@ void write_bluetooth_logo(LiquidCrystal lcd, int row, int col){
   lcd.write(byte(0));
 }
 
+void write_price(LiquidCrystal lcd, int price){
+
+  lcd.setCursor(0, 1);
+  lcd.print("                ");
+  lcd.setCursor(13, 1);
+  lcd.print(".00");
+
+  String price_str = String(price);
+  lcd.setCursor(13 - price_str.length(), 1);
+  lcd.print(price_str);
+
+  lcd.setCursor(11- price_str.length(), 1);
+  lcd.print("Q");
+
+}
+
 #endif

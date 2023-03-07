@@ -27,7 +27,7 @@ const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 const int din = 10, cs = 9, clk = 8;
-LedControl matrix(din, cs, clk, 1);
+LedControl matrix(din, clk ,cs, 1);
 
 // ------------------ Main Buttons ------------------ //
 Button prev_button(22);
@@ -336,6 +336,9 @@ void consumer_main_dashboard(int *current_consumer_menu, bool *session){
                 break;
         }
 
+        lcd.setCursor(0, 1);
+        lcd.print("<-            ->");
+
         if(next_button.is_pressed()){
             current_option++;
             if(current_option > 2){
@@ -374,6 +377,7 @@ void consumer_main_dashboard(int *current_consumer_menu, bool *session){
 
 void consumer_buy_products(int *current_menu){
     
+
     lcd.clear();
     int current_product_index = 0;
     bool exit = false;
@@ -385,33 +389,38 @@ void consumer_buy_products(int *current_menu){
         lcd.setCursor(0, 0);
         lcd.print(String(current_product.name));
         lcd.setCursor(0, 1);
-        lcd.print(String(current_product.price));
+        write_price(lcd, current_product.price);
         matrix_print_number(matrix, current_product.quantity);
 
-        if(next_button.is_pressed()){
-            current_product_index++;
-            if(current_product_index > get_product_count()){
-                current_product_index = 0;
+        while(true){
+            if(next_button.is_pressed()){
+                current_product_index++;
+                if(current_product_index >= get_product_count()){
+                    current_product_index = 0;
+                }
+                lcd.clear();
+                current_product = get_product(current_product_index);
+                break;
             }
-            lcd.clear();
-            current_product = get_product(current_product_index);
-        }
 
-        if(prev_button.is_pressed()){
-            current_product_index--;
-            if(current_product_index < 0){
-                current_product_index = get_product_count();
+            if(prev_button.is_pressed()){
+                current_product_index--;
+                if(current_product_index < 0){
+                    current_product_index = get_product_count();
+                }
+                lcd.clear();
+                current_product = get_product(current_product_index);
+                break;
             }
-            lcd.clear();
-            current_product = get_product(current_product_index);
-        }
 
-        if(ok_button.is_pressed()){
-            // TODO: buy details
-        }
+            if(ok_button.is_pressed()){
+                // TODO: buy details
+            }
 
-        if(cancel_button.is_pressed()){
-            exit = true;
+            if(cancel_button.is_pressed()){
+                exit = true;
+                break;
+            }
         }
 
     }
