@@ -9,7 +9,11 @@
 
 #include "button.h"
 #include "lcd.h"
+#include "matrix.h"
+
 #include "user.h"
+#include "product.h"
+#include "eeprom_manager.h"
 #include "user_functions.h"
 
 // ------------------ Menus ------------------ //
@@ -116,6 +120,9 @@ void welcome(){
     String text = "";
     while (!is_bluetooth_connected)
     {
+
+        is_bluetooth_connected = true; // ! TEST PURPOSES ONLY
+
          while(Serial1.available()){
             delay(10);
             char c = Serial1.read();
@@ -200,14 +207,16 @@ void login(){
 
         lcd.clear();
         lcd.setCursor(0, 0);
-        lcd.print("Ingresa el token:");
+        lcd.print("Token:");
 
         int tries = 0;
         bool is_token_validated = false;
         String token_received = "";
 
         while(!is_token_validated){
-            
+
+            is_token_validated = true; // ! TEST PURPOSES ONLY
+
             char key = keypad.getKey();
             if(key != NO_KEY){
                 token_received += key;
@@ -223,9 +232,9 @@ void login(){
                     tries++;
                     lcd.clear();
                     lcd.setCursor(0, 0);
-                    lcd.print("Token invalido");
+                    lcd.print("Invalid token");
                     lcd.setCursor(0, 1);
-                    lcd.print("Intentos: " + String(tries));
+                    lcd.print("Tries: " + String(tries));
                     delay(1000);
                     token_received = "";
                     lcd.clear();
@@ -245,7 +254,7 @@ void login(){
         if(is_token_validated){
             lcd.clear();
             lcd.setCursor(0, 0);
-            lcd.print("Bienvenido");
+            lcd.print("Welcome");
             lcd.setCursor(0, 1);
             lcd.print(user.nickname);
 
@@ -265,9 +274,9 @@ void login(){
     } else {
         lcd.clear();
         lcd.setCursor(0, 0);
-        lcd.print("Credenciales");
+        lcd.print("Incorrect");
         lcd.setCursor(0, 1);
-        lcd.print("incorrectas");
+        lcd.print("Credentials");
         delay(1000);
     }
 }
@@ -307,13 +316,13 @@ void consumer_main_dashboard(int *current_consumer_menu, bool *session){
             
         switch (current_option){
             case 0:
-                lcd.print("Comprar Productos");
+                lcd.print("Buy products");
                 break;
             case 1:
-                lcd.print("Ver creditos");
+                lcd.print("Credits");
                 break;
             case 2:
-                lcd.print("Cerrar sesion");
+                lcd.print("Logout");
                 break;
         }
 
@@ -354,11 +363,49 @@ void consumer_main_dashboard(int *current_consumer_menu, bool *session){
 }
 
 void consumer_buy_products(int *current_menu){
-    // TODO:
+    
     lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Comprar productos");
-    delay(2000);
+    int current_product_index = 0;
+    bool exit = false;
+
+    Product current_product = get_product(current_product_index);
+
+    while(!exit){
+
+        lcd.setCursor(0, 0);
+        lcd.print(String(current_product.name));
+        lcd.setCursor(0, 1);
+        lcd.print(String(current_product.price));
+        matrix_print_number(matrix, current_product.quantity);
+
+        if(next_button.is_pressed()){
+            current_product_index++;
+            if(current_product_index > get_product_count()){
+                current_product_index = 0;
+            }
+            lcd.clear();
+            current_product = get_product(current_product_index);
+        }
+
+        if(prev_button.is_pressed()){
+            current_product_index--;
+            if(current_product_index < 0){
+                current_product_index = get_product_count();
+            }
+            lcd.clear();
+            current_product = get_product(current_product_index);
+        }
+
+        if(ok_button.is_pressed()){
+            // TODO: buy details
+        }
+
+        if(cancel_button.is_pressed()){
+            exit = true;
+        }
+
+    }
+
     *current_menu = CONSUMER_MAIN_DASHBOARD;
 }
 
@@ -366,9 +413,10 @@ void consumer_credits(int *current_menu){
 
     lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print("Ver creditos");
+    lcd.print("Credits: " + String(authenticated_user.credits));
     lcd.setCursor(0, 1);
-    lcd.print(String(authenticated_user.credits));
+    lcd.print("OK: back");
+    
 
     while(true){
         if(ok_button.is_pressed()){
