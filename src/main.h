@@ -193,8 +193,6 @@ void login(){
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("Ingresa el token:");
-        lcd.setCursor(0, 1);
-        lcd.print(token);
 
         int tries = 0;
         bool is_token_validated = false;
@@ -205,6 +203,8 @@ void login(){
             char key = keypad.getKey();
             if(key != NO_KEY){
                 token_received += key;
+                lcd.setCursor(0, 1);
+                lcd.print(token_received);
             }
 
             if(ok_button.is_pressed()){
