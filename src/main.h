@@ -125,8 +125,10 @@ void welcome(){
         if(text.length() > 0 && text == "connected"){
             is_bluetooth_connected = true;
             lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print("Bluetooth");
             lcd.setCursor(0, 1);
-            lcd.print("Bluetooth connected");
+            lcd.print("Connected");
             text="";
             delay(1000);
         }
@@ -186,9 +188,15 @@ void login(){
     User user = login_user(nickname, password);
 
     if(user.is_valid()){
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("Generating");
+        lcd.setCursor(0, 1);
+        lcd.print("token");
+        
         String token = get_user_token();
-
         Serial1.write(token.c_str());
+        delay(1000);
 
         lcd.clear();
         lcd.setCursor(0, 0);
@@ -220,13 +228,14 @@ void login(){
                     lcd.print("Intentos: " + String(tries));
                     delay(1000);
                     token_received = "";
+                    lcd.clear();
                 }
             }
 
             if(tries >= 3){
                 lcd.clear();
                 lcd.setCursor(0, 0);
-                lcd.print("Intentos agotados");
+                lcd.print("No more tries");
                 delay(10000);
                 break;
             }
@@ -243,14 +252,15 @@ void login(){
             authenticated_user = user;
             
             if(user.isAdmin){
+                Serial1.write("admin");
                 current_menu = ADMIN;
             } else {
+                Serial1.write("consumer");
                 current_menu = CONSUMER;
             }
 
             delay(1000);
         }
-
 
     } else {
         lcd.clear();
