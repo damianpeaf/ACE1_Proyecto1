@@ -8,9 +8,12 @@
         - José Manuel Ibarra Pirir 202001800
 */
 
+#include "main.h"
 
 void setup() {
+    menu_setup();
 }
 
 void loop() {
+    menu_loop();
 }
