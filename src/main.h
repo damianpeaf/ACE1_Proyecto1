@@ -64,6 +64,14 @@ void consumer_main_dashboard(int *current_menu, bool *session);
 void consumer_buy_products(int *current_menu);
 void consumer_credits(int *current_menu);
 
+// * Admin
+void admin_dashboard();
+void admin_main_dashboard(int *current_menu, bool *session);
+void admin_add_user();
+void admin_product_actions();
+void admin_register_user();
+
+
 void menu_setup(){
     lcd.begin(16, 2);
     
@@ -94,6 +102,8 @@ void menu_loop(){
         break;
 
     case ADMIN:
+        admin_dashboard();
+        break;
         // TODO: 
         break;
 
@@ -375,6 +385,120 @@ void consumer_credits(int *current_menu){
             break;
         }
     }
+    *current_menu = CONSUMER_MAIN_DASHBOARD;
+}
+
+admin_dashboard(){
+    lcd.clear();
+
+    bool session = true;
+    int current_menu = CONSUMER_MAIN_DASHBOARD;
+    
+    int *current_menu_ptr = &current_menu;
+    bool *session_ptr = &session;
+
+    while(session){
+        switch (current_menu){
+            case CONSUMER_MAIN_DASHBOARD:
+                admin_main_dashboard(current_menu_ptr, session_ptr);
+                break;  
+            case ADMIN_PRODUCT_ACTIONS:
+                admin_product_actions(current_menu_ptr);
+                break;
+            case ADMIN_REGISTER_USER:
+                admin_register_user(current_menu_ptr);
+                break;
+            case ADMIN_STATE:
+                //TODO
+                break;
+        }
+    }
+}
+
+void admin_main_dashboard(int *current_admin_menu, bool *session){
+    lcd.clear();
+    bool end = false;
+    int current_option = 0;
+    
+    while(!end){
+        lcd.setCursor(0, 0);
+            
+        switch (current_option){
+            case 0:
+                lcd.print("Productos");
+                break;
+            case 1:
+                lcd.print("Registrar user");
+                break;
+            case 2:
+                lcd.print("Ver estado");
+                break;
+            case 3:
+                lcd.print("Cerrar sesion");
+                break;
+        }
+
+        if(next_button.is_pressed()){
+            current_option++;
+            if(current_option > 3){
+                current_option = 0;
+            }
+            lcd.clear();
+        }
+
+        if(prev_button.is_pressed()){
+            current_option--;
+            if(current_option < 0){
+                current_option = 3;
+            }
+            lcd.clear();
+        }
+
+        if(ok_button.is_pressed()){
+            switch (current_option){
+                case 0:
+                    *current_admin_menu = ADMIN_PRODUCT_ACTIONS;
+                    end = true;
+                    break;
+                case 1:
+                    end = true;
+                    *current_admin_menu = ADMIN_REGISTER_USER;
+                    break;
+                case 2:
+                    end = true;
+                    *current_admin_menu = ADMIN_STATE;
+                    break;
+                case 3:
+                    end = true;
+                    *session = false;
+                    current_menu = WELCOME;
+                    break;
+            }
+        }
+    }
+}
+
+void admin_product_actions(int *current_menu){
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Productos");
+    delay(2000);
+    *current_menu = CONSUMER_MAIN_DASHBOARD;
+}
+
+void admin_register_user(int *current_menu){
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Registrar user");
+    delay(2000);
+    *current_menu = CONSUMER_MAIN_DASHBOARD;
+}
+
+void admin_state(int *current_menu){
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Ver estado");
+    delay(2000);
     *current_menu = CONSUMER_MAIN_DASHBOARD;
 }
 
