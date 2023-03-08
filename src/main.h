@@ -20,7 +20,7 @@
 const int WELCOME = 0, LOGIN = 1, CONSUMER = 2, ADMIN = 3;
 const int CONSUMER_MAIN_DASHBOARD = 0, CONSUMER_BUY_PRODUCTS = 1, CONSUMER_CREDITS = 2;
 const int ADMIN_MAIN_DASHBOARD = 0, ADMIN_PRODUCT_ACTIONS = 1, ADMIN_REGISTER_USER = 2, ADMIN_STATE = 3;
-int current_menu = WELCOME;
+int current_menu = ADMIN;
 
 // ------------------ Visualization ------------------ //
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
@@ -74,6 +74,7 @@ void admin_main_dashboard(int *current_menu, bool *session);
 void admin_add_user(int *current_menu);
 void admin_product_actions(int *current_menu);
 void admin_register_user(int *current_menu);
+void modify_product(int *current_menu);
 
 
 void menu_setup(){
@@ -495,6 +496,9 @@ void admin_main_dashboard(int *current_admin_menu, bool *session){
                 break;
         }
 
+        lcd.setCursor(0, 1);
+        lcd.print("<-            ->");
+
         if(next_button.is_pressed()){
             current_option++;
             if(current_option > 3){
@@ -536,11 +540,128 @@ void admin_main_dashboard(int *current_admin_menu, bool *session){
 }
 
 void admin_product_actions(int *current_menu){
+
     lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Productos");
-    delay(2000);
-    *current_menu = CONSUMER_MAIN_DASHBOARD;
+    int current_product_index = 0;
+    bool exit = false;
+
+    Product current_product = get_product(current_product_index);
+
+    while(!exit){
+
+        lcd.setCursor(0, 0);
+        lcd.print(String(current_product.name));
+        lcd.setCursor(0, 1);
+        write_price(lcd, current_product.price);
+        matrix_print_number(matrix, current_product.quantity);
+
+        while(true){
+            if(next_button.is_pressed()){
+                current_product_index++;
+                if(current_product_index >= get_product_count()){
+                    current_product_index = 0;
+                }
+                lcd.clear();
+                current_product = get_product(current_product_index);
+                break;
+            }
+
+            if(prev_button.is_pressed()){
+                current_product_index--;
+                if(current_product_index < 0){
+                    current_product_index = get_product_count();
+                }
+                lcd.clear();
+                current_product = get_product(current_product_index);
+                break;
+            }
+
+            if(ok_button.is_pressed() && current_product.quantity == 0){
+                lcd.clear();
+                modify_product(*current_menu);
+                break;
+            }
+                
+
+            if(cancel_button.is_pressed()){
+                exit = true;
+                break;
+            }
+        }
+
+    }
+
+    *current_menu = ADMIN_PRODUCT_ACTIONS;
+}
+
+void modify_product(int *current_menu){
+    bool end = false;
+    int current_option = 0;
+    
+    while(!end){
+
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("Nombre:");
+        String nombre = "";
+        while(true){
+            char key = keypad.getKey();
+            if(key != NO_KEY){
+                nombre += key;
+                lcd.setCursor(0, 1);
+                lcd.print(nombre);
+            }
+            if(next_button.is_pressed()){
+                break;
+            }
+        }
+
+        lcd.clear();
+    
+        lcd.setCursor(0, 0);
+        lcd.print("Cantidad:");
+        String cantidad = "";
+        while(true){
+            char key = keypad.getKey();
+            if(key != NO_KEY){
+                cantidad += key;
+                lcd.setCursor(0, 1);
+                lcd.print(cantidad);
+            }
+            if(next_button.is_pressed()){
+                break;
+            }
+        }
+
+        lcd.clear();
+    
+        lcd.setCursor(0, 0);
+        lcd.print("Precio:");
+        String precio = "";
+        while(true){
+            char key = keypad.getKey();
+            if(key != NO_KEY){
+                precio += key;
+                lcd.setCursor(0, 1);
+                lcd.print(precio);
+            }
+            if(next_button.is_pressed()){
+                Product product;
+                product = Product(); 
+                strcpy(product.name, nombre.c_str());
+                product.quantity = cantidad.toInt();
+                product.price = precio.toInt();
+
+                update_product(product);
+                *current_menu = ADMIN_MAIN_DASHBOARD;
+                break;
+            }
+        }
+
+        
+        
+        
+    }
 }
 
 void admin_register_user(int *current_menu){

@@ -159,7 +159,7 @@ void reset_eeprom() {
         product = Product();
         strcpy(product.name, "generic");
         product.price = random(1, 25);
-        product.quantity = random(0,100);
+        product.quantity = 0;
         write_product(product);
     }
 
