@@ -626,15 +626,10 @@ void admin_main_dashboard(int *current_admin_menu, bool *session)
             break;
         }
 
-<<<<<<< HEAD
         lcd.setCursor(0, 1);
         lcd.print("<-            ->");
 
         if(next_button.is_pressed()){
-=======
-        if (next_button.is_pressed())
-        {
->>>>>>> 30372d0b15acd47d345e5b9455851828aba79287
             current_option++;
             if (current_option > 3)
             {
@@ -679,13 +674,8 @@ void admin_main_dashboard(int *current_admin_menu, bool *session)
     }
 }
 
-<<<<<<< HEAD
 void admin_product_actions(int *current_menu){
 
-=======
-void admin_product_actions(int *current_menu)
-{
->>>>>>> 30372d0b15acd47d345e5b9455851828aba79287
     lcd.clear();
     int current_product_index = 0;
     bool exit = false;
