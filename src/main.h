@@ -75,7 +75,7 @@ void admin_main_dashboard(int *current_menu, bool *session);
 void admin_add_user(int *current_menu);
 void admin_product_actions(int *current_menu);
 void admin_register_user(int *current_menu);
-void modify_product(int *current_menu);
+void modify_product(Product product);
 
 
 void menu_setup(){
@@ -647,8 +647,8 @@ void admin_product_actions(int *current_menu){
             }
 
             if(ok_button.is_pressed() && current_product.quantity == 0){
-                lcd.clear();
-                modify_product(*current_menu);
+                modify_product(current_product);
+                current_product = get_product(current_product_index);
                 break;
             }
                 
@@ -664,7 +664,8 @@ void admin_product_actions(int *current_menu){
     *current_menu = ADMIN_PRODUCT_ACTIONS;
 }
 
-void modify_product(int *current_menu){
+void modify_product(Product product){
+    lcd.clear();
     bool end = false;
     int current_option = 0;
     
@@ -681,7 +682,7 @@ void modify_product(int *current_menu){
                 lcd.setCursor(0, 1);
                 lcd.print(nombre);
             }
-            if(next_button.is_pressed()){
+            if(ok_button.is_pressed()){
                 break;
             }
         }
@@ -698,7 +699,7 @@ void modify_product(int *current_menu){
                 lcd.setCursor(0, 1);
                 lcd.print(cantidad);
             }
-            if(next_button.is_pressed()){
+            if(ok_button.is_pressed()){
                 break;
             }
         }
@@ -715,15 +716,14 @@ void modify_product(int *current_menu){
                 lcd.setCursor(0, 1);
                 lcd.print(precio);
             }
-            if(next_button.is_pressed()){
-                Product product;
-                product = Product(); 
+            if(ok_button.is_pressed()){
+                lcd.clear();
+                //TODO: take the product name in app
                 strcpy(product.name, nombre.c_str());
                 product.quantity = cantidad.toInt();
                 product.price = precio.toInt();
-
                 update_product(product);
-                *current_menu = ADMIN_MAIN_DASHBOARD;
+                end = true;
                 break;
             }
         }
