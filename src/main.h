@@ -584,7 +584,7 @@ void admin_dashboard()
     {
         switch (current_menu)
         {
-        case CONSUMER_MAIN_DASHBOARD:
+        case ADMIN_MAIN_DASHBOARD:
             admin_main_dashboard(current_menu_ptr, session_ptr);
             break;
         case ADMIN_PRODUCT_ACTIONS:
@@ -726,7 +726,7 @@ void admin_product_actions(int *current_menu){
 
     }
 
-    *current_menu = ADMIN_PRODUCT_ACTIONS;
+    *current_menu = ADMIN_MAIN_DASHBOARD;
 }
 
 void modify_product(Product product){
@@ -792,24 +792,82 @@ void modify_product(Product product){
                 break;
             }
         }
-
-        
-        
-        
     }
 }
 
-void admin_register_user(int *current_menu)
-{
+void admin_register_user(int *current_menu){
+
     lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Registrar user");
-    delay(2000);
-    *current_menu = CONSUMER_MAIN_DASHBOARD;
+    bool end = false;
+    int current_option = 0;
+    
+    while(!end){
+
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("Nombre:");
+        String nombre = "";
+        while(true){
+            char key = keypad.getKey();
+            if(key != NO_KEY){
+                nombre += key;
+                lcd.setCursor(0, 1);
+                lcd.print(nombre);
+            }
+            if(ok_button.is_pressed()){
+                break;
+            }
+        }
+
+        lcd.clear();
+    
+        lcd.setCursor(0, 0);
+        lcd.print("Apodo:");
+        String apodo = "";
+        while(true){
+            char key = keypad.getKey();
+            if(key != NO_KEY){
+                apodo += key;
+                lcd.setCursor(0, 1);
+                lcd.print(apodo);
+            }
+            if(ok_button.is_pressed()){
+                break;
+            }
+        }
+
+        lcd.clear();
+    
+        lcd.setCursor(0, 0);
+        lcd.print("Contraseña:");
+        String password = "";
+        while(true){
+            char key = keypad.getKey();
+            if(key != NO_KEY){
+                password += key;
+                lcd.setCursor(0, 1);
+                lcd.print(password);
+            }
+            if(ok_button.is_pressed()){
+                lcd.clear();
+                //TODO: take the user name in app
+                User consumer = User();
+                consumer.isAdmin = false;
+                strcpy(consumer.name, nombre.c_str());
+                strcpy(consumer.nickname, apodo.c_str());
+                strcpy(consumer.password, password.c_str());
+                consumer.credits = 250;
+                write_user(consumer);
+                //TODO validate if nickname is already taken to show error 
+                *current_menu = ADMIN_MAIN_DASHBOARD;
+                end = true;
+                break;
+            }
+        }
+    }
 }
 
-void admin_state(int *current_menu)
-{
+void admin_state(int *current_menu){
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("Ver estado");
