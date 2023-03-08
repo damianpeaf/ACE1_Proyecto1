@@ -7,9 +7,23 @@ void setup() {
   Serial.begin(9600);
   Serial.println("Conectado");
 }
+
+void startConsumerMenu() {
+  Serial1.print("consumer");
+  Serial.println("consumer");
+  delay(4000);
+  Serial.println("Show errors");
+  while(true){
+    Serial1.write("Error: Entrada no valida");
+    delay(4000);
+    return true;
+  }
+}
 void sendToken() {
   delay(4000);
   Serial1.write("123ABC");
+  delay(4000);
+  startConsumerMenu();
 }
 void loop() {
   // put your main code here, to run repeatedly:
@@ -19,11 +33,8 @@ void loop() {
     text += c;
   }
   if (text.length() > 0){
-    if(text == "on"){
-      digitalWrite(13,HIGH);
-    }
-    if(text == "off"){
-      digitalWrite(13,LOW);
+    if(text == "disconnected"){
+      Serial.println("Desconectado");
     }
     if(text == "connected"){
       Serial.println(text);
