@@ -66,6 +66,7 @@ void login();
 void consumer_dashboard();
 void consumer_main_dashboard(int *current_menu, bool *session);
 void consumer_buy_products(int *current_menu);
+void sale_details(Product product); 
 void consumer_credits(int *current_menu);
 
 // * Admin
@@ -394,6 +395,9 @@ void consumer_buy_products(int *current_menu){
         matrix_print_number(matrix, current_product.quantity);
 
         while(true){
+
+            // ? MOVE STEPPER ?
+
             if(next_button.is_pressed()){
                 current_product_index++;
                 if(current_product_index >= get_product_count()){
@@ -415,7 +419,10 @@ void consumer_buy_products(int *current_menu){
             }
 
             if(ok_button.is_pressed()){
-                // TODO: buy details
+                sale_details(current_product);
+                // Update product reference
+                current_product = get_product(current_product_index);
+                break;
             }
 
             if(cancel_button.is_pressed()){
@@ -427,6 +434,69 @@ void consumer_buy_products(int *current_menu){
     }
 
     *current_menu = CONSUMER_MAIN_DASHBOARD;
+}
+
+void sale_details(Product product){
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Quantity: ");
+
+    String required_quantity_str = "";
+    String error_message = "";
+    while(true){
+
+        char key = keypad.getKey();
+
+        if(key != NO_KEY && key != 'A' && key != 'B' && key != 'C' && key != 'D' && key != 'E' && key != 'F'){
+            required_quantity_str += key;
+            lcd.setCursor(10, 1);
+            lcd.print(required_quantity_str);
+        }
+
+        if(cancel_button.is_pressed()){
+            break;
+        }
+
+        if(ok_button.is_pressed()){
+            // * Check for available quantity
+            int required_quantity = required_quantity_str.toInt();
+
+            if(required_quantity > product.quantity){
+                error_message = "Not enough quantity";
+            } else if(required_quantity * product.price  > authenticated_user.credits){
+                error_message = "Not enough credits";
+            } else {
+                authenticated_user.credits -= required_quantity * product.price;
+                product.quantity -= required_quantity;
+
+                // * Update product quantity and user credits
+                update_product(product);
+                update_user(authenticated_user);
+
+                lcd.clear();
+                lcd.setCursor(0, 0);
+                lcd.print("Sale completed");
+                lcd.setCursor(0, 1);
+                lcd.print("Dispatching...");
+                delay(2000); // ! REMOVE THIS
+                lcd.clear();
+
+                // TODO: MOVE STEPPER
+            }
+
+            break;
+            
+        }
+    }
+
+    if(error_message != ""){
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print(error_message);
+        // TODO: Send error message to app
+        delay(2000);
+        lcd.clear();
+    }
 }
 
 void consumer_credits(int *current_menu){

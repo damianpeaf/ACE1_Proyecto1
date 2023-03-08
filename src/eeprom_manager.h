@@ -120,7 +120,7 @@ void write_user(User user) {
     EEPROM.put(CURRENT_USER_ADDRESS, user.address + sizeof(User));
 }
 
-User get_user( int index) {
+User get_user(int index) {
 
     User user;
     if(index < 0 || index >= get_user_count()) {
@@ -179,6 +179,7 @@ void reset_eeprom() {
     strcpy(consumer.name, "damian");
     strcpy(consumer.nickname, "123456");
     strcpy(consumer.password, "123456");
+    consumer.credits = 100;
     write_user(consumer);
 
 }
