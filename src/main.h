@@ -134,7 +134,7 @@ void welcome()
     while (!is_bluetooth_connected)
     {
 
-        is_bluetooth_connected = true; // ! TEST PURPOSES ONLY
+        //is_bluetooth_connected = true; // ! TEST PURPOSES ONLY
 
         while (Serial1.available())
         {
@@ -227,6 +227,7 @@ void login()
 
         String token = get_user_token();
         Serial1.write("token");
+        delay(3000);
         Serial1.write(token.c_str());
         delay(1000);
 
@@ -241,7 +242,7 @@ void login()
         while (!is_token_validated)
         {
 
-            is_token_validated = true; // ! TEST PURPOSES ONLY
+            //is_token_validated = true; // ! TEST PURPOSES ONLY
 
             char key = keypad.getKey();
             if (key != NO_KEY)

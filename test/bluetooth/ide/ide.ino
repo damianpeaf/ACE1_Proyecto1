@@ -13,14 +13,13 @@ void startConsumerMenu() {
   Serial.println("consumer");
   delay(4000);
   Serial.println("Show errors");
-  while(true){
-    Serial1.write("Error: Entrada no valida");
-    delay(4000);
-    return true;
-  }
+  Serial1.write("Error: Entrada no valida");
+  delay(5000);
+  Serial1.write("logout");
 }
 void sendToken() {
-  delay(4000);
+  Serial1.write("token");
+  delay(5000);
   Serial1.write("123ABC");
   delay(4000);
   startConsumerMenu();
