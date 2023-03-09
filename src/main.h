@@ -438,7 +438,7 @@ void consumer_buy_products(int *current_menu)
         while (true)
         {
 
-            // ? MOVE STEPPER ?
+            // TODO: MOVE STEPPER, 36° each product
 
             if (next_button.is_pressed())
             {
@@ -539,7 +539,7 @@ void sale_details(Product product)
                 delay(2000); // ! REMOVE THIS
                 lcd.clear();
 
-                // TODO: MOVE STEPPER
+                // TODO: MOVE SERVO
             }
 
             break;
