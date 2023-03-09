@@ -226,6 +226,7 @@ void login()
         lcd.print("token");
 
         String token = get_user_token();
+        Serial1.write("token");
         Serial1.write(token.c_str());
         delay(1000);
 
@@ -315,6 +316,8 @@ void login()
         delay(1000);
     }
 }
+
+// -------------------------------------- CONSUMER --------------------------------------
 
 void consumer_dashboard()
 {
@@ -406,6 +409,7 @@ void consumer_main_dashboard(int *current_consumer_menu, bool *session)
                 end = true;
                 *session = false;
                 current_menu = WELCOME;
+                Serial1.write("logout");
                 break;
             }
         }
@@ -530,6 +534,7 @@ void sale_details(Product product)
                 lcd.print("Sale completed");
                 lcd.setCursor(0, 1);
                 lcd.print("Dispatching...");
+                Serial1.write("compra realizada");
                 delay(2000); // ! REMOVE THIS
                 lcd.clear();
 
@@ -546,6 +551,7 @@ void sale_details(Product product)
         lcd.setCursor(0, 0);
         lcd.print(error_message);
         // TODO: Send error message to app
+        Serial1.write(error_message);
         delay(2000);
         lcd.clear();
     }
@@ -569,6 +575,8 @@ void consumer_credits(int *current_menu)
     }
     *current_menu = CONSUMER_MAIN_DASHBOARD;
 }
+
+// -------------------------------------- ADMIN --------------------------------------
 
 void admin_dashboard()
 {
