@@ -21,7 +21,7 @@
 const int WELCOME = 0, LOGIN = 1, CONSUMER = 2, ADMIN = 3;
 const int CONSUMER_MAIN_DASHBOARD = 0, CONSUMER_BUY_PRODUCTS = 1, CONSUMER_CREDITS = 2;
 const int ADMIN_MAIN_DASHBOARD = 0, ADMIN_PRODUCT_ACTIONS = 1, ADMIN_REGISTER_USER = 2, ADMIN_STATE = 3;
-int current_menu = ADMIN;
+int current_menu = WELCOME;
 
 // ------------------ Visualization ------------------ //
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
@@ -551,7 +551,7 @@ void sale_details(Product product)
         lcd.setCursor(0, 0);
         lcd.print(error_message);
         // TODO: Send error message to app
-        Serial1.write(error_message);
+        Serial1.write(error_message.c_str());
         delay(2000);
         lcd.clear();
     }
