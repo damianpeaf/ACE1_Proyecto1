@@ -8,14 +8,31 @@ void setup() {
   Serial.println("Conectado");
 }
 
+void startAdminMenu(){
+  delay(3000);
+  Serial1.write("admin");
+  delay(3000);
+  Serial1.write("name");
+  String name = "";
+  while(name != "Alvaro") {
+    while(Serial1.available()){
+      delay(10);
+      char c = Serial1.read();
+      name += c;
+    }
+  }
+  Serial.println(name);
+  delay(3000);
+  Serial1.write("logout");
+}
 void startConsumerMenu() {
   Serial1.print("consumer");
   Serial.println("consumer");
   delay(4000);
   Serial.println("Show errors");
   Serial1.write("Error: Entrada no valida");
-  delay(5000);
-  Serial1.write("logout");
+  delay(3000);
+  startAdminMenu();
 }
 void sendToken() {
   Serial1.write("token");

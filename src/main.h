@@ -135,7 +135,7 @@ void welcome()
     while (!is_bluetooth_connected)
     {
 
-        is_bluetooth_connected = true; // ! TEST PURPOSES ONLY
+        //is_bluetooth_connected = true; // ! TEST PURPOSES ONLY
 
         while (Serial1.available())
         {
@@ -276,6 +276,7 @@ void login()
         lcd.print("token");
 
         String token = get_user_token();
+        // SEND TOKEN TO THE APP
         Serial1.write("token");
         delay(3000);
         Serial1.write(token.c_str());
@@ -292,7 +293,7 @@ void login()
         while (!is_token_validated)
         {
 
-            is_token_validated = true; // ! TEST PURPOSES ONLY
+            //is_token_validated = true; // ! TEST PURPOSES ONLY
 
             char key = keypad.getKey();
             if (key != NO_KEY)
@@ -585,6 +586,7 @@ void sale_details(Product product)
                 lcd.print("Sale completed");
                 lcd.setCursor(0, 1);
                 lcd.print("Dispatching...");
+                // SEND DATA TO THE APP
                 Serial1.write("compra realizada");
                 delay(2000); // ! REMOVE THIS
                 lcd.clear();
@@ -601,9 +603,9 @@ void sale_details(Product product)
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print(error_message);
-        // TODO: Send error message to app
+        //Send error message to app
         Serial1.write(error_message.c_str());
-        delay(2000);
+        delay(3000);
         lcd.clear();
     }
 }
@@ -727,6 +729,7 @@ void admin_main_dashboard(int *current_admin_menu, bool *session)
                 end = true;
                 *session = false;
                 current_menu = WELCOME;
+                Serial1.write("logout");
                 break;
             }
         }
@@ -794,18 +797,24 @@ void modify_product(Product product){
     int current_option = 0;
     
     while(!end){
+        // ASK FOR A NAME
+        Serial1.write("name");
 
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("Nombre:");
         String nombre = "";
-        while (Serial1.available())
+        while ( nombre.length() < 1 || nombre.length() > 16)
         {
-            delay(10);
-            char c = Serial1.read();
-            nombre += c;
+            while (Serial1.available())
+            {
+                delay(10);
+                char c = Serial1.read();
+                nombre += c;
+            }
         }
-        Serial1.write("name");
+
+
         /*while(true){
             char key = keypad.getKey();
             if(key != NO_KEY){
@@ -884,18 +893,23 @@ void admin_register_user(int *current_menu){
     int current_option = 0;
     
     while(!end){
+        // ASK FOR A NAME
+        Serial1.write("name");
 
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("Nombre:");
         String nombre = "";
-        while (Serial1.available())
+        while ( nombre.length() < 1 || nombre.length() > 16)
         {
-            delay(10);
-            char c = Serial1.read();
-            nombre += c;
+            while (Serial1.available())
+            {
+                delay(10);
+                char c = Serial1.read();
+                nombre += c;
+            }
         }
-        Serial1.write("name");
+
         /*while(true){
             char key = keypad.getKey();
             if(key != NO_KEY){
@@ -944,7 +958,8 @@ void admin_register_user(int *current_menu){
                     lcd.clear();
                     lcd.setCursor(0, 0);
                     lcd.print("User exists");
-                    Serial1.write("error");
+                    // SEND TO THE APP
+                    Serial1.write("Error: Usuario existente");
                     delay(1000);
                 }else{
                     consumer.isAdmin = false;
@@ -956,6 +971,8 @@ void admin_register_user(int *current_menu){
                     lcd.clear();
                     lcd.setCursor(0, 0);
                     lcd.print("User registered");
+                    // SEND TO THE APP
+                    Serial1.write("Usuario registrado");
                     delay(1000);
                     write_user(consumer);
                 }
@@ -971,6 +988,8 @@ void admin_register_user(int *current_menu){
 void admin_state(int *current_menu){
     bool end = false;
     while(!end){
+
+        String dataToApp = "";
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("MO:");
@@ -978,25 +997,54 @@ void admin_state(int *current_menu){
         lcd.print(getm0());
         lcd.setCursor(4, 1);
         lcd.print("%");
-        delay(2000);
+        // fill the string with the data
+        dataToApp += "MO:";
+        dataToApp += getm0();
+        dataToApp += "%";
+        // Send it 
+        Serial1.write(dataToApp.c_str());
+        delay(3000);
+        dataToApp = "";
+
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("M1:");
         lcd.setCursor(0, 1);
         lcd.print(get_user_count()-1);
-        delay(2000);
+        // fill the string with the data
+        dataToApp += "M1:";
+        dataToApp += get_user_count()-1;
+        // Send it 
+        Serial1.write(dataToApp.c_str());
+        delay(3000);
+        dataToApp = "";
+
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("M2:");
         lcd.setCursor(0, 1);
         lcd.print(cantidad_productos());
-        delay(2000);
+        // fill the string with the data
+        dataToApp += "M2:";
+        dataToApp += cantidad_productos();
+        // Send it 
+        Serial1.write(dataToApp.c_str());
+        delay(3000);
+        dataToApp = "";
+
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("M3:");
         lcd.setCursor(0, 1);
         lcd.print(cantidad_productos_vacios());
-        delay(2000);
+        // fill the string with the data
+        dataToApp += "M3:";
+        dataToApp += cantidad_productos_vacios();
+        // Send it 
+        Serial1.write(dataToApp.c_str());
+        delay(3000);
+        dataToApp = "";
+        Serial1.write("Info...")
         //TODO: mostrar en app
         end = true;
     }
