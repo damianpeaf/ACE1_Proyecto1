@@ -154,14 +154,67 @@ void reset_eeprom() {
     // INIT PRODUCTS
 
     Product product;
+        
+    product = Product(); // * 1
+    strcpy(product.name, "Doritos");
+    product.price = 5;
+    product.quantity = 5;
+    write_product(product);
 
-    for (int i = 0; i < MAX_PRODUCTS; i++) {
-        product = Product();
-        strcpy(product.name, "generic");
-        product.price = random(1, 25);
-        product.quantity = 0;
-        write_product(product);
-    }
+    product = Product(); // * 2
+    strcpy(product.name, "Coca Cola");
+    product.price = 4;
+    product.quantity = 10;
+    write_product(product);
+
+    product = Product(); // * 3
+    strcpy(product.name, "Pepsi");
+    product.price = 4;
+    product.quantity = 10;
+    write_product(product);
+
+    product = Product(); // * 4
+    strcpy(product.name, "Fanta");
+    product.price = 4;
+    product.quantity = 10;
+    write_product(product);
+
+    product = Product(); // * 5
+    strcpy(product.name, "Sprite");
+    product.price = 4;
+    product.quantity = 10;
+    write_product(product);
+
+    product = Product(); // * 6
+    strcpy(product.name, "Tortrix");
+    product.price = 3;
+    product.quantity = 10;
+    write_product(product);
+
+    product = Product(); // * 7
+    strcpy(product.name, "Cheetos");
+    product.price = 3;
+    product.quantity = 10;
+    write_product(product);
+
+    product = Product(); // * 8
+    strcpy(product.name, "Lays");
+    product.price = 3;
+    product.quantity = 10;
+    write_product(product);
+
+    product = Product(); // * 9
+    strcpy(product.name, "Takis");
+    product.price = 3;
+    product.quantity = 10;
+    write_product(product);
+
+    product = Product(); // * 10
+    strcpy(product.name, "Grapete");
+    product.price = 3;
+    product.quantity = 10;
+    write_product(product);
+
 
     // INIT ADMIN USER
 
@@ -173,13 +226,40 @@ void reset_eeprom() {
     write_user(admin);
 
 
-    // Test consumer
-    User consumer = User();
+    // Test consumers
+
+    User consumer;
+    
+    consumer = User();
     consumer.isAdmin = false;
     strcpy(consumer.name, "damian");
     strcpy(consumer.nickname, "123456");
     strcpy(consumer.password, "123456");
     consumer.credits = 100;
+    write_user(consumer);
+
+    consumer = User();
+    consumer.isAdmin = false;
+    strcpy(consumer.name, "alvaro");
+    strcpy(consumer.nickname, "111111");
+    strcpy(consumer.password, "111111");
+    consumer.credits = 50;
+    write_user(consumer);
+
+    consumer = User();
+    consumer.isAdmin = false;
+    strcpy(consumer.name, "jose");
+    strcpy(consumer.nickname, "222222");
+    strcpy(consumer.password, "222222");
+    consumer.credits = 20;
+    write_user(consumer);
+
+    consumer = User();
+    consumer.isAdmin = false;
+    strcpy(consumer.name, "daniel");
+    strcpy(consumer.nickname, "333333");
+    strcpy(consumer.password, "333333");
+    consumer.credits = 10;
     write_user(consumer);
 
 }

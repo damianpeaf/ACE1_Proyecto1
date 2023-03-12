@@ -134,7 +134,7 @@ void welcome()
     while (!is_bluetooth_connected)
     {
 
-        //is_bluetooth_connected = true; // ! TEST PURPOSES ONLY
+        is_bluetooth_connected = true; // ! TEST PURPOSES ONLY
 
         while (Serial1.available())
         {
@@ -185,13 +185,38 @@ void login()
         char key = keypad.getKey();
         if (key != NO_KEY)
         {
-            nickname += key;
-            lcd.setCursor(0, 1);
-            lcd.print(nickname);
+
+            if(nickname.length()<10){
+                nickname += key;
+                lcd.setCursor(0, 1);
+                lcd.print(nickname);
+            }else{
+                lcd.setCursor(0, 1);
+                lcd.print("                ");
+                lcd.setCursor(0, 1);
+                lcd.print("MAX");
+                delay(1000);
+                lcd.setCursor(0, 1);
+                lcd.print("                ");
+                lcd.setCursor(0, 1);
+                lcd.print(nickname);
+            }
         }
         if (ok_button.is_pressed())
         {
             break;
+        }
+
+        if (cancel_button.is_pressed())
+        {
+            if (nickname.length() > 0)
+            {
+                nickname.remove(nickname.length() - 1);
+                lcd.setCursor(0, 1);
+                lcd.print("                ");
+                lcd.setCursor(0, 1);
+                lcd.print(nickname);
+            }
         }
     }
 
@@ -205,13 +230,37 @@ void login()
         char key = keypad.getKey();
         if (key != NO_KEY)
         {
-            password += key;
-            lcd.setCursor(0, 1);
-            lcd.print(password);
+            if(password.length()<10){
+                password += key;
+                lcd.setCursor(0, 1);
+                lcd.print(password);
+            }else{
+                lcd.setCursor(0, 1);
+                lcd.print("                ");
+                lcd.setCursor(0, 1);
+                lcd.print("MAX");
+                delay(1000);
+                lcd.setCursor(0, 1);
+                lcd.print("                ");
+                lcd.setCursor(0, 1);
+                lcd.print(password);
+            }
         }
         if (ok_button.is_pressed())
         {
             break;
+        }
+
+        if (cancel_button.is_pressed())
+        {
+            if (password.length() > 0)
+            {
+                password.remove(password.length() - 1);
+                lcd.setCursor(0, 1);
+                lcd.print("                ");
+                lcd.setCursor(0, 1);
+                lcd.print(password);
+            }
         }
     }
 
@@ -242,7 +291,7 @@ void login()
         while (!is_token_validated)
         {
 
-            //is_token_validated = true; // ! TEST PURPOSES ONLY
+            is_token_validated = true; // ! TEST PURPOSES ONLY
 
             char key = keypad.getKey();
             if (key != NO_KEY)
