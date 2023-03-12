@@ -798,7 +798,14 @@ void modify_product(Product product){
         lcd.setCursor(0, 0);
         lcd.print("Nombre:");
         String nombre = "";
-        while(true){
+        while (Serial1.available())
+        {
+            delay(10);
+            char c = Serial1.read();
+            nombre += c;
+        }
+        Serial1.write("name");
+        /*while(true){
             char key = keypad.getKey();
             if(key != NO_KEY){
                 nombre += key;
@@ -808,10 +815,9 @@ void modify_product(Product product){
             if(ok_button.is_pressed()){
                 break;
             }
-        }
+        }*/
 
         lcd.clear();
-    
         lcd.setCursor(0, 0);
         lcd.print("Cantidad:");
         String cantidad = "";
@@ -841,15 +847,32 @@ void modify_product(Product product){
             }
             if(ok_button.is_pressed()){
                 lcd.clear();
-                //TODO: take the product name in app
-                strcpy(product.name, nombre.c_str());
-                product.quantity = cantidad.toInt();
-                product.price = precio.toInt();
-                update_product(product);
-                end = true;
-                break;
+                
+                if(nombre.length() > 0 && nombre.length() <=16 && cantidad.toInt() > 0 && cantidad.toInt() < 100) {
+                    strcpy(product.name, nombre.c_str());
+                    product.quantity = cantidad.toInt();
+                    product.price = precio.toInt();
+                    update_product(product);
+                    lcd.clear();
+                    lcd.setCursor(0, 0);
+                    lcd.print("Modified");
+                    delay(1000);
+                    end = true;
+                    break;
+                }else{
+                    lcd.clear();
+                    lcd.setCursor(0, 0);
+                    lcd.print("Error");
+                    Serial1.write("error");
+                    delay(1000);
+                    end = true;
+                    break;
+                }
+            
+                
             }
         }
+        
     }
 }
 
@@ -865,7 +888,14 @@ void admin_register_user(int *current_menu){
         lcd.setCursor(0, 0);
         lcd.print("Nombre:");
         String nombre = "";
-        while(true){
+        while (Serial1.available())
+        {
+            delay(10);
+            char c = Serial1.read();
+            nombre += c;
+        }
+        Serial1.write("name");
+        /*while(true){
             char key = keypad.getKey();
             if(key != NO_KEY){
                 nombre += key;
@@ -875,7 +905,7 @@ void admin_register_user(int *current_menu){
             if(ok_button.is_pressed()){
                 break;
             }
-        }
+        }*/
 
         lcd.clear();
     
@@ -908,15 +938,26 @@ void admin_register_user(int *current_menu){
             }
             if(ok_button.is_pressed()){
                 lcd.clear();
-                //TODO: take the user name in app
                 User consumer = User();
-                consumer.isAdmin = false;
-                strcpy(consumer.name, nombre.c_str());
-                strcpy(consumer.nickname, apodo.c_str());
-                strcpy(consumer.password, password.c_str());
-                consumer.credits = 250;
-                write_user(consumer);
-                //TODO validate if nickname is already taken to show error 
+                if(is_user_registered(apodo.c_str())){
+                    lcd.clear();
+                    lcd.setCursor(0, 0);
+                    lcd.print("User exists");
+                    Serial1.write("error");
+                    delay(1000);
+                }else{
+                    consumer.isAdmin = false;
+                    strcpy(consumer.name, nombre.c_str());
+                    strcpy(consumer.nickname, apodo.c_str());
+                    strcpy(consumer.password, password.c_str());
+                    consumer.credits = 250;
+                    Serial.print("Registrado ");
+                    lcd.clear();
+                    lcd.setCursor(0, 0);
+                    lcd.print("User registered");
+                    delay(1000);
+                    write_user(consumer);
+                }
                 *current_menu = ADMIN_MAIN_DASHBOARD;
                 end = true;
                 break;
@@ -924,6 +965,7 @@ void admin_register_user(int *current_menu){
         }
     }
 }
+
 
 void admin_state(int *current_menu){
     lcd.clear();

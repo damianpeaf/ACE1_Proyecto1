@@ -33,6 +33,7 @@ int get_current_user_address();
 void write_user(User user);
 User get_user(int index);
 void update_user(User user);
+bool is_user_registered(String username);
 
 
 
@@ -138,6 +139,16 @@ void update_user(User user) {
     EEPROM.put(user.address, user);
 }
 
+bool is_user_registered(String username) {
+    for(int i = 0; i < get_user_count(); i++) {
+        User user = get_user(i);
+        if(strcmp(user.nickname, username.c_str()) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 // ------------------------------
 
@@ -158,7 +169,7 @@ void reset_eeprom() {
     product = Product(); // * 1
     strcpy(product.name, "Doritos");
     product.price = 5;
-    product.quantity = 5;
+    product.quantity = 0;
     write_product(product);
 
     product = Product(); // * 2
