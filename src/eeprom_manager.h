@@ -149,7 +149,37 @@ bool is_user_registered(String username) {
     return false;
 }
 
+int getm0(){
+    int aux = 0;
+    for(int i = 0; i < get_user_count(); i++) {
+        User user = get_user(i);
+        if(user.credits == 0) {
+            aux++;
+        }
+    }
+    return (((aux-1) * 100.0) / (get_user_count()-1));
+}
 
+int cantidad_productos(){
+    int aux = 0;
+    for(int i = 0; i < get_product_count(); i++) {
+        Product product = get_product(i);
+        if(product.quantity > 0) {
+            aux++;
+        }
+    }
+    return aux;
+}
+int cantidad_productos_vacios(){
+    int aux = 0;
+    for(int i = 0; i < get_product_count(); i++) {
+        Product product = get_product(i);
+        if(product.quantity == 0) {
+            aux++;
+        }
+    }
+    return aux;
+}
 // ------------------------------
 
 void reset_eeprom() {

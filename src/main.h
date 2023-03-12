@@ -72,10 +72,11 @@ void consumer_credits(int *current_menu);
 // * Admin
 void admin_dashboard();
 void admin_main_dashboard(int *current_menu, bool *session);
-void admin_add_user(int *current_menu);
 void admin_product_actions(int *current_menu);
 void admin_register_user(int *current_menu);
 void modify_product(Product product);
+void admin_register_user(int *current_menu);
+void admin_state(int *current_menu);
 
 void menu_setup()
 {
@@ -652,7 +653,7 @@ void admin_dashboard()
             admin_register_user(current_menu_ptr);
             break;
         case ADMIN_STATE:
-            // TODO
+            admin_state(current_menu_ptr);
             break;
         }
     }
@@ -968,11 +969,39 @@ void admin_register_user(int *current_menu){
 
 
 void admin_state(int *current_menu){
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Ver estado");
-    delay(2000);
-    *current_menu = CONSUMER_MAIN_DASHBOARD;
+    bool end = false;
+    while(!end){
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("MO:");
+        lcd.setCursor(0, 1);
+        lcd.print(getm0());
+        lcd.setCursor(4, 1);
+        lcd.print("%");
+        delay(2000);
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("M1:");
+        lcd.setCursor(0, 1);
+        lcd.print(get_user_count()-1);
+        delay(2000);
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("M2:");
+        lcd.setCursor(0, 1);
+        lcd.print(cantidad_productos());
+        delay(2000);
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("M3:");
+        lcd.setCursor(0, 1);
+        lcd.print(cantidad_productos_vacios());
+        delay(2000);
+        //TODO: mostrar en app
+        end = true;
+    }
+    
+    *current_menu = ADMIN_MAIN_DASHBOARD;
 }
 
 #endif
