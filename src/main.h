@@ -6,6 +6,8 @@
 #include <LedControl.h>
 #include <Key.h>
 #include <Keypad.h>
+#include <Stepper.h>
+#include <Servo.h>
 
 #include "button.h"
 #include "lcd.h"
@@ -42,10 +44,11 @@ const byte ROWS = 4;
 const byte COLS = 4;
 
 // ------------------ Stepper ------------------ //
-CustomStepper stepper(7, 6, 5, 4);
+int stepsPerRevolution = 200;
+Stepper stepper(stepsPerRevolution, 6, 7, 8, 9);
 
 // ------------------ Servo ------------------ //
-CustomServo servo(13);
+// Servo servo;
 
 char keys[ROWS][COLS] = {
     {'7', '8', '9', 'C'},
@@ -507,7 +510,7 @@ void consumer_buy_products(int *current_menu)
             if (next_button.is_pressed())
             {
                 // Avanzamos con el stepper
-                stepper.step(true);
+                calculate_movement_stepper(stepper, true);
                 current_product_index++;
                 if (current_product_index >= get_product_count())
                 {
@@ -520,7 +523,7 @@ void consumer_buy_products(int *current_menu)
 
             if (prev_button.is_pressed())
             {
-                stepper.step(false);
+                calculate_movement_stepper(stepper, false);
                 current_product_index--;
                 if (current_product_index < 0)
                 {

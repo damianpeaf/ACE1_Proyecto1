@@ -5,35 +5,27 @@
 #include <Arduino.h>
 #include <Servo.h>
 
-class Servo
+// Funciones
+void calculate_movement_servo(Servo servo, int angle);
+
+// Movimiento del servo
+void calculate_movement_servo(Servo servo, int angle)
 {
-public:
-    Servo();
-    void attach(int pin);
-    void write(int angle);
-    void detach();
-    void calculateMovement(int angle)
+    // Mover 36 grados = 1 vuelta
+    // Controlar que el ángulo no sea mayor a 36
+    // Verificar la dirección
+    // Si es positivo, girar en sentido horario
+    // Si es negativo, girar en sentido antihorario
+
+    int steps = 36; // 1 vuelta completa = 36 pasos
+    if (angle > 0)
     {
-        int steps = 0;
-        if (angle > this->angle)
-        {
-            steps = angle - this->angle;
-            for (int i = 0; i < steps; i++)
-            {
-                this->write(this->angle + i);
-                delay(10);
-            }
-        }
-        else if (angle < this->angle)
-        {
-            steps = this->angle - angle;
-            for (int i = 0; i < steps; i++)
-            {
-                this->write(this->angle - i);
-                delay(10);
-            }
-        }
+        servo.write(angle); // girar en sentido horario
     }
-};
+    else
+    {
+        servo.write(angle); // girar en sentido antihorario
+    }
+}
 
 #endif

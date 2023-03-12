@@ -1,43 +1,32 @@
-
 #ifndef STEPPER_H
 #define STEPPER_H
 
 #include <Arduino.h>
 #include <Stepper.h>
 
-int stepsPerRevolution = 200; // Número de pasos por revolución
+// Funciones
+void calculate_movement_stepper(Stepper stepper, bool clockwise);
 
-class Stepper
+// Movimiento del motor
+void calculate_movement_stepper(Stepper stepper, bool clockwise)
 {
-public:
-    Stepper(int pin1, int pin2, int pin3, int pin4);
-    void calculate_movement(bool clockwise);
+    // Mover 36 grados = 1 vuelta
+    // Controlar que el ángulo no sea mayor a 36
+    // Verificar la dirección
+    // Si es positivo, girar en sentido horario
+    // Si es negativo, girar en sentido antihorario
+
+    int steps = 36; // 1 vuelta completa = 36 pasos
+    if (clockwise)
     {
-        // Movemos hacia adelante 36 grados (360/10)
-        // Recibimos el clockwise para saber si es hacia adelante o hacia atrás
-        // Si es hacia adelante, el stepper gira en sentido horario
-        // Si es hacia atrás, el stepper gira en sentido antihorario
-
-        if (clockwise)
-        {
-            for (int i = 0; i < 36; i++)
-            {
-                this->stepper->step(1);
-                delay(10);
-            }
-        }
-        else
-        {
-            for (int i = 0; i < 36; i++)
-            {
-                this->stepper->step(-1);
-                delay(10);
-            }
-        }
+        stepper.setSpeed(100); // velocidad en rpm
+        stepper.step(steps);   // girar en sentido horario
     }
-
-private:
-    int currentStep = 0;
-};
+    else
+    {
+        stepper.setSpeed(-100); // velocidad en rpm
+        stepper.step(-steps);   // girar en sentido antihorario
+    }
+}
 
 #endif
