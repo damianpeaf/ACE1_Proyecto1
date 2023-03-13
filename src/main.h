@@ -966,6 +966,8 @@ void admin_register_user(int *current_menu)
                 send_name = false;
                 Serial1.write("Esperando info...");
                 }else {
+                    lcd.setCursor(0, 1);
+                    lcd.print(nombre);
                     break;
                 }
             }
@@ -1025,7 +1027,7 @@ void admin_register_user(int *current_menu)
                     lcd.setCursor(0, 1);
                     lcd.print("or too short");
                     // SEND TO THE APP
-                    Serial1.write("Error: Longitud Nick");
+                    Serial1.write("Error: Nick muy largo o muy corto");
                     delay(1000);
                 }
                 else if(password.length() > 10 || password.length() == 0){
@@ -1035,7 +1037,7 @@ void admin_register_user(int *current_menu)
                     lcd.setCursor(0, 1);
                     lcd.print("or too short");
                     // SEND TO THE APP
-                    Serial1.write("Error: Longitud Password");
+                    Serial1.write("Error: Contraseña muy larga o muy corta");
                     delay(1000);
                 }
                 else
