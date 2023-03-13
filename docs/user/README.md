@@ -55,6 +55,10 @@ Luego de ingresar las credenciales se generará un token el cual será enviado a
 <img src="../user/assets/10.png" alt="Descripción de la imagen" width="150">
 <img src="../user/assets/11.png" alt="Descripción de la imagen" width="150">
 
+También se puede presionar el botón de desconectar desde la aplicación móvil para desconectar el dispositivo de la máquina.
+
+Para poder cancelar el menú actual e ir al anterior, se podrá presionar el botón *cancel*.
+
 ## **Menú para usuarios**
 
 Habrá varios menús, donde utilizando los botones, se podrá escoger que función realizar. Como por ejemplo:
@@ -77,6 +81,8 @@ En la opción de productos, se podrán crear nuevos productos, para abrir ese me
 
 Al seleccionar se deberá ingresar el nombre del producto, la cantidad y el precio.
 
+El nombre del producto no puede ser nulo, la cantidad debe ser mayor a cero y el precio debe ser mayor a cero.
+
 <img src="../user/assets/21.png" alt="Descripción de la imagen" width="150">
 <img src="../user/assets/22.png" alt="Descripción de la imagen" width="150">
 
@@ -88,7 +94,8 @@ Para ingresar nuevos usuarios se solicitará un nombre. Que se deberá ingresar 
 <img src="../user/assets/19.png" alt="Descripción de la imagen" width="150">
 <img src="../user/assets/20.png" alt="Descripción de la imagen" width="150">
 
-También se solicitará la contraseña del usuario.
+También se solicitará la contraseña del usuario. Que se deberá ingresar desde la aplicación.
+
 <img src="../user/assets/26.png" alt="Descripción de la imagen" width="150">
 
 Así mismo, se podrá asignar un apodo para poder ingresarlo desde la máquina.
