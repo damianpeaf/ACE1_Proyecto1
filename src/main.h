@@ -838,13 +838,25 @@ void modify_product(Product product)
         lcd.setCursor(0, 0);
         lcd.print("Nombre:");
         String nombre = "";
-        while (nombre.length() < 1 || nombre.length() > 16)
+        bool send_name = false;
+        while (true)
         {
             while (Serial1.available())
             {
                 delay(10);
                 char c = Serial1.read();
                 nombre += c;
+                send_name = true;
+            }
+            if(send_name){
+                if(nombre.length() > 16 || nombre.length() == 0){
+                Serial1.write("Error: Nombre muy largo o muy corto");
+                nombre = "";
+                send_name = false;
+                Serial1.write("Esperando info...");
+                }else {
+                    break;
+                }
             }
         }
 
@@ -941,13 +953,25 @@ void admin_register_user(int *current_menu)
         lcd.setCursor(0, 0);
         lcd.print("Nombre:");
         String nombre = "";
-        while (nombre.length() < 1 || nombre.length() > 16)
+        bool send_name = false;
+        while (true)
         {
             while (Serial1.available())
             {
                 delay(10);
                 char c = Serial1.read();
                 nombre += c;
+                send_name = true;
+            }
+            if(send_name){
+                if(nombre.length() > 16 || nombre.length() == 0){
+                Serial1.write("Error: Nombre muy largo o muy corto");
+                nombre = "";
+                send_name = false;
+                Serial1.write("Esperando info...");
+                }else {
+                    break;
+                }
             }
         }
 
