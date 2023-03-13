@@ -6,6 +6,8 @@
 #include <LedControl.h>
 #include <Key.h>
 #include <Keypad.h>
+#include <Stepper.h>
+#include <Servo.h>
 
 #include "button.h"
 #include "lcd.h"
@@ -16,6 +18,7 @@
 #include "eeprom_manager.h"
 #include "user_functions.h"
 #include "custom_stepper.h"
+#include "custom_servo.h"
 
 // ------------------ Bluetooth ------------------ //
 bool is_bluetooth_connected = false;
@@ -42,6 +45,13 @@ Button cancel_button(24);
 // ------------------ Keypad ------------------ //
 const byte ROWS = 4;
 const byte COLS = 4;
+
+// ------------------ Stepper ------------------ //
+int stepsPerRevolution = 200;
+Stepper stepper(stepsPerRevolution, 6, 7, 8, 9);
+
+// ------------------ Servo ------------------ //
+Servo servo;
 
 char keys[ROWS][COLS] = {
     {'7', '8', '9', 'C'},
@@ -93,6 +103,7 @@ void menu_setup()
     next_button.setup();
     ok_button.setup();
     cancel_button.setup();
+    myservo.attach(9); // attaches the servo on pin 9 to the servo object
 }
 
 void menu_loop()
@@ -138,7 +149,7 @@ void welcome()
     while (!is_bluetooth_connected)
     {
 
-        //is_bluetooth_connected = true; // ! TEST PURPOSES ONLY
+        // is_bluetooth_connected = true; // ! TEST PURPOSES ONLY
 
         while (Serial1.available())
         {
@@ -190,11 +201,14 @@ void login()
         if (key != NO_KEY)
         {
 
-            if(nickname.length()<10){
+            if (nickname.length() < 10)
+            {
                 nickname += key;
                 lcd.setCursor(0, 1);
                 lcd.print(nickname);
-            }else{
+            }
+            else
+            {
                 lcd.setCursor(0, 1);
                 lcd.print("                ");
                 lcd.setCursor(0, 1);
@@ -234,11 +248,14 @@ void login()
         char key = keypad.getKey();
         if (key != NO_KEY)
         {
-            if(password.length()<10){
+            if (password.length() < 10)
+            {
                 password += key;
                 lcd.setCursor(0, 1);
                 lcd.print(password);
-            }else{
+            }
+            else
+            {
                 lcd.setCursor(0, 1);
                 lcd.print("                ");
                 lcd.setCursor(0, 1);
@@ -296,7 +313,7 @@ void login()
         while (!is_token_validated)
         {
 
-            //is_token_validated = true; // ! TEST PURPOSES ONLY
+            // is_token_validated = true; // ! TEST PURPOSES ONLY
 
             char key = keypad.getKey();
             if (key != NO_KEY)
@@ -496,6 +513,8 @@ void consumer_buy_products(int *current_menu)
 
             if (next_button.is_pressed())
             {
+                // Avanzamos con el stepper
+                calculate_movement_stepper(stepper, true);
                 current_product_index++;
                 if (current_product_index >= get_product_count())
                 {
@@ -508,6 +527,7 @@ void consumer_buy_products(int *current_menu)
 
             if (prev_button.is_pressed())
             {
+                calculate_movement_stepper(stepper, false);
                 current_product_index--;
                 if (current_product_index < 0)
                 {
@@ -595,6 +615,7 @@ void sale_details(Product product)
                 lcd.clear();
 
                 // TODO: MOVE SERVO
+                move_servo(servo)
             }
 
             break;
@@ -606,7 +627,7 @@ void sale_details(Product product)
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print(error_message);
-        //Send error message to app
+        // Send error message to app
         Serial1.write(error_message.c_str());
         delay(3000);
         lcd.clear();
@@ -693,7 +714,8 @@ void admin_main_dashboard(int *current_admin_menu, bool *session)
         lcd.setCursor(0, 1);
         lcd.print("<-            ->");
 
-        if(next_button.is_pressed()){
+        if (next_button.is_pressed())
+        {
             current_option++;
             if (current_option > 3)
             {
@@ -739,7 +761,8 @@ void admin_main_dashboard(int *current_admin_menu, bool *session)
     }
 }
 
-void admin_product_actions(int *current_menu){
+void admin_product_actions(int *current_menu)
+{
 
     lcd.clear();
     int current_product_index = 0;
@@ -747,7 +770,8 @@ void admin_product_actions(int *current_menu){
 
     Product current_product = get_product(current_product_index);
 
-    while(!exit){
+    while (!exit)
+    {
 
         lcd.setCursor(0, 0);
         lcd.print(String(current_product.name));
@@ -755,10 +779,13 @@ void admin_product_actions(int *current_menu){
         write_price(lcd, current_product.price);
         matrix_print_number(matrix, current_product.quantity);
 
-        while(true){
-            if(next_button.is_pressed()){
+        while (true)
+        {
+            if (next_button.is_pressed())
+            {
                 current_product_index++;
-                if(current_product_index >= get_product_count()){
+                if (current_product_index >= get_product_count())
+                {
                     current_product_index = 0;
                 }
                 lcd.clear();
@@ -766,9 +793,11 @@ void admin_product_actions(int *current_menu){
                 break;
             }
 
-            if(prev_button.is_pressed()){
+            if (prev_button.is_pressed())
+            {
                 current_product_index--;
-                if(current_product_index < 0){
+                if (current_product_index < 0)
+                {
                     current_product_index = get_product_count();
                 }
                 lcd.clear();
@@ -776,30 +805,32 @@ void admin_product_actions(int *current_menu){
                 break;
             }
 
-            if(ok_button.is_pressed() && current_product.quantity == 0){
+            if (ok_button.is_pressed() && current_product.quantity == 0)
+            {
                 modify_product(current_product);
                 current_product = get_product(current_product_index);
                 break;
             }
-                
 
-            if(cancel_button.is_pressed()){
+            if (cancel_button.is_pressed())
+            {
                 exit = true;
                 break;
             }
         }
-
     }
 
     *current_menu = ADMIN_MAIN_DASHBOARD;
 }
 
-void modify_product(Product product){
+void modify_product(Product product)
+{
     lcd.clear();
     bool end = false;
     int current_option = 0;
-    
-    while(!end){
+
+    while (!end)
+    {
         // ASK FOR A NAME
         Serial1.write("name");
 
@@ -807,7 +838,7 @@ void modify_product(Product product){
         lcd.setCursor(0, 0);
         lcd.print("Nombre:");
         String nombre = "";
-        while ( nombre.length() < 1 || nombre.length() > 16)
+        while (nombre.length() < 1 || nombre.length() > 16)
         {
             while (Serial1.available())
             {
@@ -816,7 +847,6 @@ void modify_product(Product product){
                 nombre += c;
             }
         }
-
 
         /*while(true){
             char key = keypad.getKey();
@@ -834,34 +864,41 @@ void modify_product(Product product){
         lcd.setCursor(0, 0);
         lcd.print("Cantidad:");
         String cantidad = "";
-        while(true){
+        while (true)
+        {
             char key = keypad.getKey();
-            if(key != NO_KEY){
+            if (key != NO_KEY)
+            {
                 cantidad += key;
                 lcd.setCursor(0, 1);
                 lcd.print(cantidad);
             }
-            if(ok_button.is_pressed()){
+            if (ok_button.is_pressed())
+            {
                 break;
             }
         }
 
         lcd.clear();
-    
+
         lcd.setCursor(0, 0);
         lcd.print("Precio:");
         String precio = "";
-        while(true){
+        while (true)
+        {
             char key = keypad.getKey();
-            if(key != NO_KEY){
+            if (key != NO_KEY)
+            {
                 precio += key;
                 lcd.setCursor(0, 1);
                 lcd.print(precio);
             }
-            if(ok_button.is_pressed()){
+            if (ok_button.is_pressed())
+            {
                 lcd.clear();
-                
-                if(nombre.length() > 0 && nombre.length() <=16 && cantidad.toInt() > 0 && cantidad.toInt() < 100) {
+
+                if (nombre.length() > 0 && nombre.length() <= 16 && cantidad.toInt() > 0 && cantidad.toInt() < 100)
+                {
                     strcpy(product.name, nombre.c_str());
                     product.quantity = cantidad.toInt();
                     product.price = precio.toInt();
@@ -872,7 +909,9 @@ void modify_product(Product product){
                     delay(1000);
                     end = true;
                     break;
-                }else{
+                }
+                else
+                {
                     lcd.clear();
                     lcd.setCursor(0, 0);
                     lcd.print("Error");
@@ -881,21 +920,20 @@ void modify_product(Product product){
                     end = true;
                     break;
                 }
-            
-                
             }
         }
-        
     }
 }
 
-void admin_register_user(int *current_menu){
+void admin_register_user(int *current_menu)
+{
 
     lcd.clear();
     bool end = false;
     int current_option = 0;
-    
-    while(!end){
+
+    while (!end)
+    {
         // ASK FOR A NAME
         Serial1.write("name");
 
@@ -903,7 +941,7 @@ void admin_register_user(int *current_menu){
         lcd.setCursor(0, 0);
         lcd.print("Nombre:");
         String nombre = "";
-        while ( nombre.length() < 1 || nombre.length() > 16)
+        while (nombre.length() < 1 || nombre.length() > 16)
         {
             while (Serial1.available())
             {
@@ -926,45 +964,54 @@ void admin_register_user(int *current_menu){
         }*/
 
         lcd.clear();
-    
+
         lcd.setCursor(0, 0);
         lcd.print("Apodo:");
         String apodo = "";
-        while(true){
+        while (true)
+        {
             char key = keypad.getKey();
-            if(key != NO_KEY){
+            if (key != NO_KEY)
+            {
                 apodo += key;
                 lcd.setCursor(0, 1);
                 lcd.print(apodo);
             }
-            if(ok_button.is_pressed()){
+            if (ok_button.is_pressed())
+            {
                 break;
             }
         }
 
         lcd.clear();
-    
+
         lcd.setCursor(0, 0);
         lcd.print("Contraseña:");
         String password = "";
-        while(true){
+        while (true)
+        {
             char key = keypad.getKey();
-            if(key != NO_KEY){
+            if (key != NO_KEY)
+            {
                 password += key;
                 lcd.setCursor(0, 1);
                 lcd.print(password);
             }
-            if(ok_button.is_pressed()){
+            if (ok_button.is_pressed())
+            {
                 lcd.clear();
                 User consumer = User();
-                if(is_user_registered(apodo.c_str())){
+                if (is_user_registered(apodo.c_str()))
+                {
                     lcd.clear();
                     lcd.setCursor(0, 0);
                     lcd.print("User exists");
                     // SEND TO THE APP
                     Serial1.write("Error: Usuario existente");
                     delay(1000);
-                }else{
+                }
+                else
+                {
                     consumer.isAdmin = false;
                     strcpy(consumer.name, nombre.c_str());
                     strcpy(consumer.nickname, apodo.c_str());
@@ -987,10 +1034,11 @@ void admin_register_user(int *current_menu){
     }
 }
 
-
-void admin_state(int *current_menu){
+void admin_state(int *current_menu)
+{
     bool end = false;
-    while(!end){
+    while (!end)
+    {
 
         String dataToApp = "";
         lcd.clear();
@@ -1004,7 +1052,7 @@ void admin_state(int *current_menu){
         dataToApp += "MO:";
         dataToApp += getm0();
         dataToApp += "%";
-        // Send it 
+        // Send it
         Serial1.write(dataToApp.c_str());
         delay(3000);
         dataToApp = "";
@@ -1013,11 +1061,11 @@ void admin_state(int *current_menu){
         lcd.setCursor(0, 0);
         lcd.print("M1:");
         lcd.setCursor(0, 1);
-        lcd.print(get_user_count()-1);
+        lcd.print(get_user_count() - 1);
         // fill the string with the data
         dataToApp += "M1:";
-        dataToApp += get_user_count()-1;
-        // Send it 
+        dataToApp += get_user_count() - 1;
+        // Send it
         Serial1.write(dataToApp.c_str());
         delay(3000);
         dataToApp = "";
@@ -1030,7 +1078,7 @@ void admin_state(int *current_menu){
         // fill the string with the data
         dataToApp += "M2:";
         dataToApp += cantidad_productos();
-        // Send it 
+        // Send it
         Serial1.write(dataToApp.c_str());
         delay(3000);
         dataToApp = "";
@@ -1043,7 +1091,7 @@ void admin_state(int *current_menu){
         // fill the string with the data
         dataToApp += "M3:";
         dataToApp += cantidad_productos_vacios();
-        // Send it 
+        // Send it
         Serial1.write(dataToApp.c_str());
         delay(3000);
         dataToApp = "";
@@ -1051,7 +1099,7 @@ void admin_state(int *current_menu){
         //TODO: mostrar en app
         end = true;
     }
-    
+
     *current_menu = ADMIN_MAIN_DASHBOARD;
 }
 

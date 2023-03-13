@@ -17,3 +17,9 @@
 | José Manuel Ibarra Pirir | 202001800 |
 ----
 # **Descripción General**
+## Inicio de sesión
+
+## Menú principal
+
+## Menú de productos
+
