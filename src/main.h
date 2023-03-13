@@ -103,7 +103,7 @@ void menu_setup()
     next_button.setup();
     ok_button.setup();
     cancel_button.setup();
-    myservo.attach(9); // attaches the servo on pin 9 to the servo object
+    // myservo.attach(9); // attaches the servo on pin 9 to the servo object
 }
 
 void menu_loop()
@@ -135,7 +135,7 @@ void menu_loop()
 
 void welcome()
 {
-    //bool is_bluetooth_connected = false; // ? Global variable
+    // bool is_bluetooth_connected = false; // ? Global variable
     lcd.clear();
 
     write_bluetooth_logo(lcd, 0, 0);
@@ -615,7 +615,7 @@ void sale_details(Product product)
                 lcd.clear();
 
                 // TODO: MOVE SERVO
-                move_servo(servo)
+                // move_servo(servo)
             }
 
             break;
@@ -1096,7 +1096,7 @@ void admin_state(int *current_menu)
         delay(3000);
         dataToApp = "";
         Serial1.write("Info...");
-        //TODO: mostrar en app
+        // TODO: mostrar en app
         end = true;
     }
 
