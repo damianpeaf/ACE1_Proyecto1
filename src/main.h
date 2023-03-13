@@ -7,7 +7,6 @@
 #include <Key.h>
 #include <Keypad.h>
 #include <Stepper.h>
-#include <Servo.h>
 
 #include "button.h"
 #include "lcd.h"
@@ -17,8 +16,6 @@
 #include "product.h"
 #include "eeprom_manager.h"
 #include "user_functions.h"
-#include "custom_stepper.h"
-#include "custom_servo.h"
 
 // ------------------ Bluetooth ------------------ //
 bool is_bluetooth_connected = false;
@@ -42,16 +39,15 @@ Button next_button(25);
 Button ok_button(23);
 Button cancel_button(24);
 
+// ------------------ Stepper ------------------ //
+int stepsPerRevolution = 10;
+int dispenserStepsRevolution = 4;
+Stepper productStepper(stepsPerRevolution, 40, 41, 42, 43);
+Stepper dispenserStepper(dispenserStepsRevolution, 50, 51, 52, 53);
+
 // ------------------ Keypad ------------------ //
 const byte ROWS = 4;
 const byte COLS = 4;
-
-// ------------------ Stepper ------------------ //
-int stepsPerRevolution = 200;
-Stepper stepper(stepsPerRevolution, 6, 7, 8, 9);
-
-// ------------------ Servo ------------------ //
-Servo servo;
 
 char keys[ROWS][COLS] = {
     {'7', '8', '9', 'C'},
@@ -74,6 +70,10 @@ void menu_loop();
 // * Menus
 void welcome();
 void login();
+
+// * Stepper
+void calculate_product_steps(bool clockwise);
+void calculate_dispenser_steps(int quantity);
 
 // * Consumer
 void consumer_dashboard();
@@ -98,12 +98,13 @@ void menu_setup()
     matrix.shutdown(0, false);
     matrix.setIntensity(0, 8);
     matrix.clearDisplay(0);
+    productStepper.setSpeed(60);
+    dispenserStepper.setSpeed(30);
 
     prev_button.setup();
     next_button.setup();
     ok_button.setup();
     cancel_button.setup();
-    // myservo.attach(9); // attaches the servo on pin 9 to the servo object
 }
 
 void menu_loop()
@@ -149,7 +150,7 @@ void welcome()
     while (!is_bluetooth_connected)
     {
 
-        // is_bluetooth_connected = true; // ! TEST PURPOSES ONLY
+       // is_bluetooth_connected = true; // ! TEST PURPOSES ONLY
 
         while (Serial1.available())
         {
@@ -516,7 +517,7 @@ void consumer_buy_products(int *current_menu)
             if (next_button.is_pressed())
             {
                 // Avanzamos con el stepper
-                calculate_movement_stepper(stepper, true);
+                calculate_product_steps(true);
                 current_product_index++;
                 if (current_product_index >= get_product_count())
                 {
@@ -529,7 +530,7 @@ void consumer_buy_products(int *current_menu)
 
             if (prev_button.is_pressed())
             {
-                calculate_movement_stepper(stepper, false);
+                calculate_product_steps(false);
                 current_product_index--;
                 if (current_product_index < 0)
                 {
@@ -612,13 +613,12 @@ void sale_details(Product product)
                 lcd.print("Sale completed");
                 lcd.setCursor(0, 1);
                 lcd.print("Dispatching...");
+                calculate_dispenser_steps(required_quantity);
                 // SEND DATA TO THE APP
                 Serial1.write("compra realizada");
                 delay(2000); // ! REMOVE THIS
                 lcd.clear();
-
-                // TODO: MOVE SERVO
-                // move_servo(servo)
+                
             }
 
             break;
@@ -654,6 +654,22 @@ void consumer_credits(int *current_menu)
         }
     }
     *current_menu = CONSUMER_MAIN_DASHBOARD;
+}
+
+// ----- STEPPER -----
+void calculate_product_steps(bool clockwise){
+    int steps = 1;
+    if(clockwise){
+            productStepper.step(steps);
+        
+    } else {
+            productStepper.step(-steps);
+    }
+
+}
+
+void calculate_dispenser_steps(int quantity){
+    dispenserStepper.step(quantity*dispenserStepsRevolution); 
 }
 
 // -------------------------------------- ADMIN --------------------------------------
@@ -785,6 +801,7 @@ void admin_product_actions(int *current_menu)
         {
             if (next_button.is_pressed())
             {
+                calculate_product_steps(true);
                 current_product_index++;
                 if (current_product_index >= get_product_count())
                 {
@@ -797,6 +814,7 @@ void admin_product_actions(int *current_menu)
 
             if (prev_button.is_pressed())
             {
+                calculate_product_steps(false);
                 current_product_index--;
                 if (current_product_index < 0)
                 {
