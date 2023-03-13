@@ -48,7 +48,7 @@ int stepsPerRevolution = 200;
 Stepper stepper(stepsPerRevolution, 6, 7, 8, 9);
 
 // ------------------ Servo ------------------ //
-// Servo servo;
+Servo servo;
 
 char keys[ROWS][COLS] = {
     {'7', '8', '9', 'C'},
@@ -100,6 +100,7 @@ void menu_setup()
     next_button.setup();
     ok_button.setup();
     cancel_button.setup();
+    myservo.attach(9); // attaches the servo on pin 9 to the servo object
 }
 
 void menu_loop()
@@ -611,6 +612,7 @@ void sale_details(Product product)
                 lcd.clear();
 
                 // TODO: MOVE SERVO
+                move_servo(servo)
             }
 
             break;

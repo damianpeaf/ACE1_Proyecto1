@@ -6,25 +6,22 @@
 #include <Servo.h>
 
 // Funciones
-void calculate_movement_servo(Servo servo, int angle);
+void move_servo(Servo servo, int angle, int speed);
 
-// Movimiento del servo
-void calculate_movement_servo(Servo servo, int angle)
+// Variables
+
+move_servo(Servo servo, int angle, int speed)
 {
-    // Mover 36 grados = 1 vuelta
-    // Controlar que el ángulo no sea mayor a 36
-    // Verificar la dirección
-    // Si es positivo, girar en sentido horario
-    // Si es negativo, girar en sentido antihorario
-
-    int steps = 36; // 1 vuelta completa = 36 pasos
-    if (angle > 0)
+    int current_angle = servo.read();
+    int step = 1;
+    if (angle < current_angle)
     {
-        servo.write(angle); // girar en sentido horario
+        step = -1;
     }
-    else
+    for (int i = current_angle; i != angle; i += step)
     {
-        servo.write(angle); // girar en sentido antihorario
+        servo.write(i);
+        delay(speed);
     }
 }
 
