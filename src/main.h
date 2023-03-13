@@ -306,7 +306,7 @@ void login()
         lcd.setCursor(0, 0);
         lcd.print("Token:");
 
-        int tries = 0;
+        int tries = 3;
         bool is_token_validated = false;
         String token_received = "";
 
@@ -332,7 +332,7 @@ void login()
                 }
                 else
                 {
-                    tries++;
+                    tries--;
                     lcd.clear();
                     lcd.setCursor(0, 0);
                     lcd.print("Invalid token");
@@ -341,10 +341,12 @@ void login()
                     delay(1000);
                     token_received = "";
                     lcd.clear();
+                    lcd.setCursor(0, 0);
+                    lcd.print("Token:");
                 }
             }
 
-            if (tries >= 3)
+            if (tries == 0)
             {
                 lcd.clear();
                 lcd.setCursor(0, 0);
@@ -360,7 +362,7 @@ void login()
             lcd.setCursor(0, 0);
             lcd.print("Welcome");
             lcd.setCursor(0, 1);
-            lcd.print(user.nickname);
+            lcd.print(user.name);
 
             authenticated_user = user;
 
@@ -554,6 +556,7 @@ void consumer_buy_products(int *current_menu)
         }
     }
 
+    clear_matrix(matrix);
     *current_menu = CONSUMER_MAIN_DASHBOARD;
 }
 
@@ -820,6 +823,7 @@ void admin_product_actions(int *current_menu)
         }
     }
 
+    clear_matrix(matrix);
     *current_menu = ADMIN_MAIN_DASHBOARD;
 }
 
