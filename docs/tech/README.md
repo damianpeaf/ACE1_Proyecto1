@@ -33,9 +33,40 @@ El proyecto consiste en implementar un modelo de máquina dispensadora a nivel d
 ![Diagrama de Flujo](../tech/assets/diagrama.svg)
 
 ## **Diagrama de Clases**
+- User: Esta clase representa todos los usuarios existentes y próximos a ser creados en el sistema. Cuenta con 6 atributos y dos métodos los cuales sirven para validar las credenciales y verificar que el apodo del usuario sea válido. 
+![Diagrama de clases usuario](../tech/assets/user.jpeg)
 
+- Product: Esta clase representa cada uno de los productos que se encuentran en la máquina dispensadora, dicha clase cuenta únicamente con 4 atributos para almacenar y manejar sus diferentes estados. 
+![Diagrama de clases producto](../tech/assets/product.jpeg)
 
-## Simulación
+- Button: Esta clase representa y maneja todo los posibles estados de cada uno de los botones utilizados en el sistema, cuenta con dos atributos, uno para saber el pin donde estará conectado y un estado, además cuenta con dos métodos para configurar el pin y modificar el estado cada vez que se presione dicho botón. 
+![Diagrama de clases button](../tech/assets/button.jpeg)
+
+## Aplicación Móvil
+Para lograr la comunicación vía Bluetooth entre el sistema utilizando el driver HC-05 y un teléfono celular, se realizo la aplicación en la plataforma de MIT APP INVENTOR, donde el diseño gráfico de cada interfaz se realizo mediante drag and drop y la programación lógica de cada componente con lógica de programación basada en bloques. 
+### Componentes principales 
+-	Labels para introducir y modificar textos 
+-	Buttons para accionar diferentes funcionalidades 
+-	ListPicker para seleccionar entre diferentes opciones
+-	Clock para llevar los intervalos de comunicación entre el dispositivo y el sistema
+-	BluetoothClient para lograr la comunicación exitosa
+- Input para ingresar nombres y enviarlos al sistema 
+-	Layouts para mostrar los diferentes estados de la aplicación
+![Componentes](../tech/assets/compo.jpeg)
+
+### Bloques de código
+- Variables globales y selección de dirección de conexión: En los primeros bloques encontramos las variables globales que almacenan toda la información entrante de la comunicación Bluetooth. Luego un bloque para dar lógica al ListPicker y permitir seleccionar una dirección de Bluetooth, el siguiente bloque ejecuta las instrucciones a realizar después de haber seleccionado una dirección, la cual es conectar dicha dirección con el modulo bluetooth y su respectivo Layout. 
+![Bloque 1](../tech/assets/block1.jpeg)
+
+- Desconectar bluetooth: Este bloque cumple con la funcionalidad de desvincular el sistema con el dispositivo provocando que los diferentes Layouts no estén visibles y permitiendo nuevamente seleccionar otra dirección de conexión. 
+![Bloque 2](../tech/assets/block2.jpeg)
+
+- Datos entrantes y lógicas de Layouts: Este bloque es el más importante de todos ya que al implementar el componente Clock, el cual siempre esta escuchando en un intervalo de tiempo dado, revisa que el dispositivo esté conectado para posteriormente solicitar información entrante y guardarla en su variable global. Dependiendo de la cadena de caracteres entrantes que reciba la aplicación, se accionan diferentes funcionalidades donde la mayoría lo que realizan es hacer visibles ciertos Layouts y ocultar otros. 
+![Bloque 3](../tech/assets/block3.jpeg)
+
+- Envio de información: El ultimo bloque captura la cadena de caracteres ingresada en el input y es enviada mediante los bloques lógicos que posee el componente de bluetooth. 
+![Bloque 4](../tech/assets/block4.jpeg)
+
 
 ## Movimiento de motores
 
