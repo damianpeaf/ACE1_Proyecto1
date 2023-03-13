@@ -111,4 +111,12 @@ void matrix_print_number(LedControl matrix, int number){
     }
 }
 
+void clear_matrix(LedControl matrix){
+    for (int i = 0; i < 8; i++){
+        for (int j = 0; j < 8; j++){
+            matrix.setLed(0, i, j, 0);
+        }
+    }
+}
+
 #endif
