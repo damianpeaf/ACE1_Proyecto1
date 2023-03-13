@@ -17,6 +17,9 @@
 #include "user_functions.h"
 #include "custom_stepper.h"
 
+// ------------------ Bluetooth ------------------ //
+bool is_bluetooth_connected = false;
+
 // ------------------ Menus ------------------ //
 const int WELCOME = 0, LOGIN = 1, CONSUMER = 2, ADMIN = 3;
 const int CONSUMER_MAIN_DASHBOARD = 0, CONSUMER_BUY_PRODUCTS = 1, CONSUMER_CREDITS = 2;
@@ -121,7 +124,7 @@ void menu_loop()
 
 void welcome()
 {
-    bool is_bluetooth_connected = false; // ? Global variable
+    //bool is_bluetooth_connected = false; // ? Global variable
     lcd.clear();
 
     write_bluetooth_logo(lcd, 0, 0);
@@ -873,7 +876,7 @@ void modify_product(Product product){
                     lcd.clear();
                     lcd.setCursor(0, 0);
                     lcd.print("Error");
-                    Serial1.write("error");
+                    Serial1.write("Ocurrio un Error");
                     delay(1000);
                     end = true;
                     break;
@@ -1044,7 +1047,7 @@ void admin_state(int *current_menu){
         Serial1.write(dataToApp.c_str());
         delay(3000);
         dataToApp = "";
-        Serial1.write("Info...")
+        Serial1.write("Info...");
         //TODO: mostrar en app
         end = true;
     }
