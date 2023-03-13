@@ -42,8 +42,42 @@ El proyecto consiste en implementar un modelo de máquina dispensadora a nivel d
 - Button: Esta clase representa y maneja todo los posibles estados de cada uno de los botones utilizados en el sistema, cuenta con dos atributos, uno para saber el pin donde estará conectado y un estado, además cuenta con dos métodos para configurar el pin y modificar el estado cada vez que se presione dicho botón. 
 ![Diagrama de clases button](../tech/assets/button.jpeg)
 
+## Manejo de memoria EEPROM
+Para el manejo de la memoria EEPROM se trabajó de manera simple desde la primera celda se comienza a guardar datos, primero se guarda cuantos Objetos hay registrados los cuales ocupan 2 bytes luego se guarda la dirección de memoria en la que se insertaría el próximo objeto el cual ocupa también 2 bytes. Luego de este bloque sigue el bloque donde se almacenan los datos donde los productos al ser únicamente 10 se les asignó un espacio por defecto y los usuarios creados cuentan con el espacio restante. 
+```C++
+const int MAX_MEMORY = 4095;
+
+const int PRODUCT_COUNT_ADDRESS = 0;
+const int CURRENT_PRODUCT_ADDRESS = 1 * sizeof(int);
+const int PRODUCTS_BLOCK_START_ADDRESS = 2 * sizeof(int);
+const int MAX_PRODUCTS = 10;
+
+const int USER_COUNT_ADDRESS = MAX_PRODUCTS * sizeof(Product) + PRODUCTS_BLOCK_START_ADDRESS;
+const int CURRENT_USER_ADDRESS = 1 * sizeof(int) + USER_COUNT_ADDRESS;
+const int USERS_BLOCK_START_ADDRESS = 2 * sizeof(int) + USER_COUNT_ADDRESS;
+
+// ----------------- FUNCTIONS -----------------
+
+int get_product_count();
+void set_product_count(int count);
+int get_current_product_address();
+void write_product(Product product);
+Product get_product(int index);
+void update_product(Product product);
+
+int get_user_count();
+void set_user_count(int count);
+int get_current_user_address();
+void write_user(User user);
+User get_user(int index);
+void update_user(User user);
+bool is_user_registered(String username);
+
+```
+
 ## Aplicación Móvil
 Para lograr la comunicación vía Bluetooth entre el sistema utilizando el driver HC-05 y un teléfono celular, se realizo la aplicación en la plataforma de MIT APP INVENTOR, donde el diseño gráfico de cada interfaz se realizo mediante drag and drop y la programación lógica de cada componente con lógica de programación basada en bloques. 
+
 ### Componentes principales 
 -	Labels para introducir y modificar textos 
 -	Buttons para accionar diferentes funcionalidades 
@@ -52,6 +86,7 @@ Para lograr la comunicación vía Bluetooth entre el sistema utilizando el drive
 -	BluetoothClient para lograr la comunicación exitosa
 - Input para ingresar nombres y enviarlos al sistema 
 -	Layouts para mostrar los diferentes estados de la aplicación
+
 ![Componentes](../tech/assets/compo.jpeg)
 
 ### Bloques de código
@@ -69,4 +104,6 @@ Para lograr la comunicación vía Bluetooth entre el sistema utilizando el drive
 
 
 ## Movimiento de motores
+- Primer Motor Stepper: Dicho motor tiene la funcionalidad de girar un cierto ángulo los 10 compartimentos donde los productos están colocados. Al contar con 10 segmentos y saber que un stepper puede girar 360 grados cada giro entonces conlleva un movimiento de 36 grados el cual muestra un producto diferente, esto funciona tanto para mostrar productos a la izquierda como a la derecha.  
 
+- Segundo Motor Stepper:Este motor tiene la funcionalidad de despachar N cantidad de productos, al momento de ser seleccionado y validado el producto a comprar, este motor acciona una espiral donde están colocados los productos y gira de tal manera que cada vuelta completada es un producto despachado. 
