@@ -767,12 +767,11 @@ void admin_product_actions(int *current_menu)
     lcd.clear();
     int current_product_index = 0;
     bool exit = false;
-
     Product current_product = get_product(current_product_index);
 
     while (!exit)
     {
-
+        lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print(String(current_product.name));
         lcd.setCursor(0, 1);
@@ -798,7 +797,7 @@ void admin_product_actions(int *current_menu)
                 current_product_index--;
                 if (current_product_index < 0)
                 {
-                    current_product_index = get_product_count();
+                    current_product_index = get_product_count()-1;
                 }
                 lcd.clear();
                 current_product = get_product(current_product_index);
@@ -838,9 +837,9 @@ void modify_product(Product product)
         lcd.setCursor(0, 0);
         lcd.print("Nombre:");
         String nombre = "";
+        //En teoria ya valida la longidud del nombre acá
         bool send_name = false;
-        while (true)
-        {
+        while (true){
             while (Serial1.available())
             {
                 delay(10);
@@ -860,18 +859,6 @@ void modify_product(Product product)
             }
         }
 
-        /*while(true){
-            char key = keypad.getKey();
-            if(key != NO_KEY){
-                nombre += key;
-                lcd.setCursor(0, 1);
-                lcd.print(nombre);
-            }
-            if(ok_button.is_pressed()){
-                break;
-            }
-        }*/
-
         lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("Cantidad:");
@@ -879,10 +866,11 @@ void modify_product(Product product)
         while (true)
         {
             char key = keypad.getKey();
-            if (key != NO_KEY)
+
+            if (key != NO_KEY && key != 'A' && key != 'B' && key != 'C' && key != 'D' && key != 'E' && key != 'F')
             {
                 cantidad += key;
-                lcd.setCursor(0, 1);
+                lcd.setCursor(10, 1);
                 lcd.print(cantidad);
             }
             if (ok_button.is_pressed())
@@ -899,17 +887,19 @@ void modify_product(Product product)
         while (true)
         {
             char key = keypad.getKey();
-            if (key != NO_KEY)
+
+            if (key != NO_KEY && key != 'A' && key != 'B' && key != 'C' && key != 'D' && key != 'E' && key != 'F')
             {
                 precio += key;
-                lcd.setCursor(0, 1);
+                lcd.setCursor(10, 1);
                 lcd.print(precio);
             }
+            
             if (ok_button.is_pressed())
             {
                 lcd.clear();
 
-                if (nombre.length() > 0 && nombre.length() <= 16 && cantidad.toInt() > 0 && cantidad.toInt() < 100)
+                if (cantidad.toInt() > 0 && cantidad.toInt() < 100)
                 {
                     strcpy(product.name, nombre.c_str());
                     product.quantity = cantidad.toInt();
@@ -926,8 +916,8 @@ void modify_product(Product product)
                 {
                     lcd.clear();
                     lcd.setCursor(0, 0);
-                    lcd.print("Error");
-                    Serial1.write("Ocurrio un Error");
+                    lcd.print("Error cantidad");
+                    Serial1.write("Error: La cantidad excede el limite");
                     delay(1000);
                     end = true;
                     break;
@@ -953,6 +943,8 @@ void admin_register_user(int *current_menu)
         lcd.setCursor(0, 0);
         lcd.print("Nombre:");
         String nombre = "";
+
+        //En teoria ya valida la longidud del nombre acá
         bool send_name = false;
         while (true)
         {
@@ -974,19 +966,7 @@ void admin_register_user(int *current_menu)
                 }
             }
         }
-
-        /*while(true){
-            char key = keypad.getKey();
-            if(key != NO_KEY){
-                nombre += key;
-                lcd.setCursor(0, 1);
-                lcd.print(nombre);
-            }
-            if(ok_button.is_pressed()){
-                break;
-            }
-        }*/
-
+        
         lcd.clear();
 
         lcd.setCursor(0, 0);
@@ -1032,6 +1012,26 @@ void admin_register_user(int *current_menu)
                     lcd.print("User exists");
                     // SEND TO THE APP
                     Serial1.write("Error: Usuario existente");
+                    delay(1000);
+                }
+                else if(apodo.length() > 10 || apodo.length() == 0){
+                    lcd.clear();
+                    lcd.setCursor(0, 0);
+                    lcd.print("Nick too long");
+                    lcd.setCursor(0, 1);
+                    lcd.print("or too short");
+                    // SEND TO THE APP
+                    Serial1.write("Error: Longitud Nick");
+                    delay(1000);
+                }
+                else if(password.length() > 10 || password.length() == 0){
+                    lcd.clear();
+                    lcd.setCursor(0, 0);
+                    lcd.print("Passwrd too long");
+                    lcd.setCursor(0, 1);
+                    lcd.print("or too short");
+                    // SEND TO THE APP
+                    Serial1.write("Error: Longitud Password");
                     delay(1000);
                 }
                 else
