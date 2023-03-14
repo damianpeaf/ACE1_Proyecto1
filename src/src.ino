@@ -15,7 +15,7 @@
 void setup() {
     Serial.begin(9600);
     Serial1.begin(9600);
-    reset_eeprom();
+    // reset_eeprom(); // ! Just for the first time
     menu_setup();
 }
 
