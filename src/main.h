@@ -7,6 +7,7 @@
 #include <Key.h>
 #include <Keypad.h>
 #include <Stepper.h>
+#include <Servo.h>
 
 #include "button.h"
 #include "lcd.h"
@@ -41,9 +42,10 @@ Button cancel_button(24);
 
 // ------------------ Stepper ------------------ //
 int stepsPerRevolution = 10;
-int dispenserStepsRevolution = 4;
 Stepper productStepper(stepsPerRevolution, 40, 41, 42, 43);
-Stepper dispenserStepper(dispenserStepsRevolution, 50, 51, 52, 53);
+
+// ------------------ Servo ------------------ //
+Servo dispenserServo;
 
 // ------------------ Keypad ------------------ //
 const byte ROWS = 4;
@@ -73,6 +75,8 @@ void login();
 
 // * Stepper
 void calculate_product_steps(bool clockwise);
+
+// * Servo
 void calculate_dispenser_steps(int quantity);
 
 // * Consumer
@@ -99,7 +103,9 @@ void menu_setup()
     matrix.setIntensity(0, 8);
     matrix.clearDisplay(0);
     productStepper.setSpeed(60);
-    dispenserStepper.setSpeed(30);
+
+    dispenserServo.attach(6);
+    dispenserServo.write(0);
 
     prev_button.setup();
     next_button.setup();
@@ -150,7 +156,7 @@ void welcome()
     while (!is_bluetooth_connected)
     {
 
-       // is_bluetooth_connected = true; // ! TEST PURPOSES ONLY
+       is_bluetooth_connected = true; // ! TEST PURPOSES ONLY
 
         while (Serial1.available())
         {
@@ -314,7 +320,7 @@ void login()
         while (!is_token_validated)
         {
 
-            // is_token_validated = true; // ! TEST PURPOSES ONLY
+            is_token_validated = true; // ! TEST PURPOSES ONLY
 
             char key = keypad.getKey();
             if (key != NO_KEY)
@@ -669,7 +675,15 @@ void calculate_product_steps(bool clockwise){
 }
 
 void calculate_dispenser_steps(int quantity){
-    dispenserStepper.step(quantity*dispenserStepsRevolution); 
+    // Damos una vuelta completa con el servo
+    // Damos las cantidades completas de 360 grados por la cantidad que viene en el argumento
+
+    int pos = 0;
+    for (int q = 0; q < quantity; q++){
+            dispenserServo.write(360);              // tell servo to go to position in variable 'pos'
+            delay(1500);                       // waits 15ms for the servo to reach the position
+        dispenserServo.write(0);
+    }
 }
 
 // -------------------------------------- ADMIN --------------------------------------
